@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.net.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.*;
 import java.util.zip.CRC32;
@@ -25,6 +26,16 @@ public class ClientServerUtils {
     public static final String ANSI_BLACK = "\u001B[30m";
 
     private static final Object syncObj = new Object();
+public static String[] convertToStrings(byte[][] byteStrings) {
+    String[] data = new String[byteStrings.length];
+    for (int i = 0; i < byteStrings.length; i++) {
+        data[i] = new String(byteStrings[i], Charset.defaultCharset());
+
+    }
+    return data;
+}
+
+
 
     public static byte[] loadFile(String filename, byte[] file_bytes, int Dpacket_length, int client_port, int colour) {
 
@@ -182,7 +193,12 @@ public class ClientServerUtils {
         }
     }
     
+  public static void copyArray1(byte src[], byte dest[], int offset, int length) {
+        for (int i = 0; i < length; i++) {
+            dest[i] = src[i+offset];
 
+        }
+    }
     public static void sendAck(DatagramSocket clientSocket, int expected_seqNo, String IP, int NClientSocket) throws UnknownHostException, IOException {
 
         InetAddress IPAddress = InetAddress.getByName(IP);

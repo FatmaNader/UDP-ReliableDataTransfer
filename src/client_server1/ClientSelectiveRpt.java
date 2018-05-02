@@ -58,7 +58,8 @@ public class ClientSelectiveRpt {
 
             DatagramPacket sendPacket = new DatagramPacket(filename.getBytes(), filename.getBytes().length, IPAddress, WellKnownServer);
             clientSocket.send(sendPacket);
-            DatagramPacket receivePacket = new DatagramPacket(init, init.length);
+            DatagramPacket receivePacket = new DatagramPacket(init, 
+                    init.length);
             clientSocket.receive(receivePacket);
 
             if (receivePacket != null) {

@@ -46,6 +46,8 @@ public class ClientRUN {
         byte[] uname = new byte[50];
         byte[] client_info = new byte[100];
        byte p = ' ';
+      int f=0;
+      DatagramSocket socket = null;
        while (true)
        {
         System.out.println("->Please enter Your name");
@@ -56,7 +58,7 @@ public class ClientRUN {
             uname[i] =(byte)p ;
         }
 
-        System.out.println("->Please enter Your password");
+        System.out.println("->Please enter Your ID");
         String password = s.nextLine();
         byte []x = password.trim().getBytes();
         ClientServerUtils.copyArray(x, pass, 0, x.length);
@@ -79,7 +81,11 @@ public class ClientRUN {
         int clientPort = Integer.parseInt(info[2].trim());
         String filename = info[3].trim();
         int windowSize = Integer.parseInt(info[4].trim());
-        DatagramSocket socket=new DatagramSocket(clientPort);
+        if(f==0)
+        {
+         socket=new DatagramSocket(clientPort);
+        }
+        f++;
         DatagramPacket sendPacket = new DatagramPacket(client_info, client_info.length, IPAddress, MainServer);
        socket.send(sendPacket);
        

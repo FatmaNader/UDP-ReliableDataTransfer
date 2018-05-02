@@ -10,30 +10,22 @@ import java.util.Scanner;
 
 public class ServerRUN {
 
-    public static final String ANSI_CYAN = "\u001B[36m";    //0
-    public static final String ANSI_PURPLE = "\u001B[35m";  //1
-    public static final String ANSI_BLUE = "\u001B[34m";    //2
-    public static final String ANSI_GREEN = "\u001B[32m";   //3
-    public static final String ANSI_RED = "\u001B[31m";     //4
-    public static final String ANSI_YELLOW = "\u001B[33m";  //5
-    public static final String ANSI_BLACK = "\u001B[30m";
-    private static final Object syncObj = new Object();
-    private static HashMap<Integer , String> clients=new HashMap<Integer, String>();
+
+    private static HashMap<Integer , String> clients=new HashMap<>();
     public int mode;
 
     // public Thread thread;
     public static void main(String args[]) throws IOException {
-
       run();
 
     }
 public static void init_clients()
 {
       clients.put(12, "fatma");
-      clients.put(2, "Rahul");
-      clients.put(7, "Singh");
-      clients.put(49, "Ajeet");
-      clients.put(3, "Anuj");
+      clients.put(2, "Monica");
+      clients.put(7, "Mohamed");
+      clients.put(49, "ahmed");
+      clients.put(34, "maha");
 }
     public static String[] Read_server_file() throws FileNotFoundException, IOException {
         File file = new File("server.in.txt");
@@ -60,16 +52,13 @@ public static void init_clients()
         int Result = randomno.nextInt(High - Low) + Low;
 
         // value after setting seed
-        System.out.println("Object after seed: " + Result);
+        //System.out.println("Object after seed: " + Result);
         return Result;
     }
 
     public static void run() throws SocketException, IOException {
-init_clients();
-//        clients = new HashMap<String, ClientSelectiveRpt>();
-//        //ClientSelectiveRpt client1 = new ClientSelectiveRpt("Monica", 5);
-//        clients.put("Monica", client1);
-        //System.out.println("DROP AFTER"+ dropafter);
+           init_clients();
+
         String[] info = new String[4];
         info = Read_server_file();
         int serverPort = Integer.parseInt(info[0].trim());
@@ -84,53 +73,57 @@ init_clients();
         int colour = -1;
         serverSocket = new DatagramSocket(serverPort);
         System.out.println("Main server is listening to requests on port: " + serverPort);
+        
         while (true) {
             if (colour == 5) {
                 colour = -1;
             }
             colour++;
-
-            byte[] receiveInfo = new byte[100];
+            int clientPort;
+           InetAddress IP_Address;
             byte[] receiveData = new byte[100];
-            
+          
+             byte[] receiveInfo = new byte[100];
              DatagramPacket receivePacket1 = new DatagramPacket(receiveInfo, receiveInfo.length);
             serverSocket.receive(receivePacket1);
-            InetAddress IP_Address = receivePacket1.getAddress();
+             IP_Address = receivePacket1.getAddress();
             byte []uname = new byte [50];
             ClientServerUtils.copyArray(receiveInfo, uname, 0, 50);
             String name = new String(uname).trim();
-            System.out.println("name:  "+name);
-            int clientPort = receivePacket1.getPort();
+            ClientServerUtils.PRINT("name:  "+name,colour);
+             clientPort = receivePacket1.getPort();
              byte []pass = new byte [50];
             ClientServerUtils.copyArray1(receiveInfo, pass,50, 50);
             String passw = new String(pass).trim();
             int id = Integer.parseInt(passw);
-            System.out.println("pass:  "+ id);
+            ClientServerUtils.PRINT("ID:  "+ id,colour);
               //System.out.println("pppp:  "+clients.get(12));
             if (clients.get(id)==null)
             {
-                System.out.println("ID NOT VALID");
+                ClientServerUtils.PRINT("ID NOT VALID",colour);
                 byte []b =new byte[1];
                 b[0]=0;
                 DatagramPacket sendack =new DatagramPacket(b, b.length,IP_Address,clientPort);
                 serverSocket.send(sendack);
             }
-            else if(clients.get(id).equals(name))
+          
+            else if(!clients.get(id).equals(name))
+                   {
+                ClientServerUtils.PRINT("ID AND USERNAME DON'T MATCH",colour);
+                byte []b =new byte[1];
+                b[0]=0;
+                DatagramPacket sendack =new DatagramPacket(b, b.length,IP_Address,clientPort);
+                serverSocket.send(sendack);
+            }
+            
+              else 
             {
-                System.out.println("Correct");
+                ClientServerUtils.PRINT("Correct",colour);
                 byte []b =new byte[1];
                 b[0]=1;
                 DatagramPacket sendack =new DatagramPacket(b, b.length,IP_Address,clientPort);
                 serverSocket.send(sendack);
-            }
-            else 
-                   {
-                System.out.println("ID AND USERNAME DON'T MATCH");
-                byte []b =new byte[1];
-                b[0]=0;
-                DatagramPacket sendack =new DatagramPacket(b, b.length,IP_Address,clientPort);
-                serverSocket.send(sendack);
-            }
+               
             
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             serverSocket.receive(receivePacket);
@@ -179,4 +172,5 @@ init_clients();
          server_inc++;
     }
 }
+    }
 }

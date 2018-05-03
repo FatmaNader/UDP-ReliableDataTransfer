@@ -25,15 +25,17 @@ public class ClientSelectiveRpt {
     public static int windowSize;
     static int color;
     static String name;
+      static DatagramSocket clientSocket;
 
     public static ArrayList<packet> Packets = new ArrayList<>();
 
-    public ClientSelectiveRpt(String IP, int WellKnownServer, int clientPort, String filename, int windowSize) {
+    public ClientSelectiveRpt(String IP, int WellKnownServer, int clientPort, String filename, int windowSize, DatagramSocket clientSocket) {
         this.IP = IP;
         this.WellKnownServer = WellKnownServer;
         this.clientPort = clientPort;
         this.filename = filename;
         this.windowSize = windowSize;
+        this.clientSocket=clientSocket;
 
     }
 
@@ -41,9 +43,7 @@ public class ClientSelectiveRpt {
         try {
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 
-            DatagramSocket clientSocket;
-
-            clientSocket = new DatagramSocket(clientPort);
+            //clientSocket = new DatagramSocket(clientPort);
 
             //define Ip an Socket
             InetAddress IPAddress = InetAddress.getByName(IP);
@@ -58,7 +58,8 @@ public class ClientSelectiveRpt {
 
             DatagramPacket sendPacket = new DatagramPacket(filename.getBytes(), filename.getBytes().length, IPAddress, WellKnownServer);
             clientSocket.send(sendPacket);
-            DatagramPacket receivePacket = new DatagramPacket(init, init.length);
+            DatagramPacket receivePacket = new DatagramPacket(init, 
+                    init.length);
             clientSocket.receive(receivePacket);
 
             if (receivePacket != null) {

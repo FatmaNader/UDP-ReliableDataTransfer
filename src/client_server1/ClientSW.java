@@ -29,43 +29,43 @@ public class ClientSW {
     public static String filename;
     public static int windowSize;
     int color;
+    static DatagramSocket clientSocket;
 
-    public ClientSW(String IP, int MainServer, int clientPort, String filename, int windowSize ) {
-        this.IP=IP;
-        this.MainServer=MainServer;
-        this.clientPort=clientPort;
-        this.filename=filename;
-        this.windowSize=windowSize;
-  
+    public ClientSW(String IP, int MainServer, DatagramSocket clientSocket, String filename, int windowSize) {
+        this.IP = IP;
+        this.MainServer = MainServer;
+        this.clientPort = clientPort;
+        this.filename = filename;
+        this.windowSize = windowSize;
+        this.clientSocket = clientSocket;
+
     }
 
     public static void run() {
         try {
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            
-            DatagramSocket clientSocket = new DatagramSocket(clientPort);
-            
+
+           // DatagramSocket clientSocket = new DatagramSocket(clientPort);
             //define Ip an Socket
             InetAddress IPAddress = InetAddress.getByName(IP);
-            
+
             byte[] receiveData = new byte[512];
             byte[] init = new byte[8];
-            
+
             System.out.println("Welcome to stop and wait client!");
             System.out.println("-------------------------------------");
-           
+
             //get file name from user
             //String FileName = inFromUser.readLine();
-            
             DatagramPacket sendPacket = new DatagramPacket(filename.getBytes(), filename.getBytes().length, IPAddress, MainServer);
             clientSocket.send(sendPacket);
-            
+
             //the file name is sent we are supposed to wait for the file
             //get packets_needed to recieve file
             //GET PACKETS NEEDED TO RECIEVE FILE
             DatagramPacket receivePacket = new DatagramPacket(init, init.length);
             clientSocket.receive(receivePacket);
-            
+
             if (receivePacket != null) {
 //            String pckts = new String(receivePacket.getData());
                 byte[] xxy = new byte[4];
@@ -79,43 +79,43 @@ public class ClientSW {
 
                 ByteBuffer by = ByteBuffer.wrap(xx);
                 packets_needed = by.getInt();
-                
+
                 System.out.println("The new server socket is: " + ThreadServer);
                 System.out.println("The packets needed to get file is:" + packets_needed);
 
             }
             if (ThreadServer > 10000) {
                 System.out.println("HELOOOOOO MONICAAA");
-                
+
                 DatagramPacket receivePacket1 = new DatagramPacket(init, init.length);
                 clientSocket.receive(receivePacket1);
                 if (receivePacket1 != null) {
 //            String pckts = new String(receivePacket.getData());
                     byte[] xxy = new byte[4];
                     xxy = Arrays.copyOfRange(init, 0, 4);
-                    
+
                     ByteBuffer byx = ByteBuffer.wrap(xxy);
                     ThreadServer = byx.getInt();
-                    
+
                     byte[] xx = new byte[4];
                     xx = Arrays.copyOfRange(init, 4, 8);
-                    
+
                     ByteBuffer by = ByteBuffer.wrap(xx);
                     packets_needed = by.getInt();
-                    
+
                     System.out.println("The new client socket is: " + ThreadServer);
                     System.out.println("The packets needed to get file is:" + packets_needed);
-                    
+
                 }
             }
-            
+
             //clientSocket.receive(receivePacket);
             get_file(clientSocket);
             System.out.println("The file is received successfully");
             System.out.print("->Please enter file name to save: ");
             String NFileName = inFromUser.readLine();
-            
-            ClientServerUtils.SaveFile(NFileName,line);
+
+            ClientServerUtils.SaveFile(NFileName, line);
             System.out.println("----------YOUR FILE IS SAVED NOW!----------");
         } catch (SocketException ex) {
             Logger.getLogger(ClientSW.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,15 +141,15 @@ public class ClientSW {
         //System.out.println("packet:\n" + debug);
 
         //get checkSum from the packet
-        int seq_no = ClientServerUtils.get_seq_no(bytes_rec,detail_length);
+        int seq_no = ClientServerUtils.get_seq_no(bytes_rec, detail_length);
         int seq = (seq_no);
-       // System.out.println("-Seq_no: " + seq);
+        // System.out.println("-Seq_no: " + seq);
         //calculate the current check sum
         ch.update(data_rec, 0, data_rec.length);
         long current_checksum = ch.getValue();
-        System.out.println("Received packet with sequence number " + (seq_no%2) + " length " + len + " expected checksum " + expected_check+
-            " and current checksum: "+ current_checksum);
-         System.out.println("-----------------------------------------------------------------------------------------------------------------");
+        System.out.println("Received packet with sequence number " + (seq_no % 2) + " length " + len + " expected checksum " + expected_check
+                + " and current checksum: " + current_checksum);
+        System.out.println("-----------------------------------------------------------------------------------------------------------------");
 
         //System.out.println("the checksum is" + current_checksum);
         ch.reset();
@@ -164,7 +164,7 @@ public class ClientSW {
     //recieve file from sender
     public static void get_file(DatagramSocket clientSocket) throws IOException {
 
-       // System.out.println("-------PACKETS NEEDED------" + packets_needed);
+        // System.out.println("-------PACKETS NEEDED------" + packets_needed);
         int w;
         for (w = 0; w < packets_needed; w++) {
             //System.out.println("this is packet no" + w);
@@ -177,7 +177,7 @@ public class ClientSW {
             //IF THERE IS ERROR 
             while (curr_sheckSum != expected_checkSum || seq_no != w) {
                 if (curr_sheckSum != expected_checkSum) {
-                     System.out.println("Packet is CORRUPTED !");
+                    System.out.println("Packet is CORRUPTED !");
                 }
                 if (seq_no != w) {
                     System.out.println("Packet is with wrong sequence number!");
@@ -197,10 +197,10 @@ public class ClientSW {
 
             //Send POSTITVE Acknowledge
             byte type = 1;
-            ClientServerUtils.sendAck(clientSocket, w,IP,ThreadServer);
+            ClientServerUtils.sendAck(clientSocket, w, IP, ThreadServer);
 
         }
-      
+
     }
 
     public static long[] recieve_packet(DatagramSocket clientSocket, int pckt_no) throws IOException {
@@ -215,7 +215,7 @@ public class ClientSW {
 
         long expected_checkSum = ClientServerUtils.get_checkSum(bytes_rec);
         //System.out.println("EXPECTED CHECK SUM IS:" + expected_checkSum);
-        int seq_no = ClientServerUtils.get_seq_no(bytes_rec,detail_length);
+        int seq_no = ClientServerUtils.get_seq_no(bytes_rec, detail_length);
 
         // System.out.println("YHTHGRTTDTGI--------------------------");
         long curr_sheckSum = get_line(bytes_rec, pckt_no, expected_checkSum);
@@ -228,6 +228,4 @@ public class ClientSW {
         return x;
     }
 
-    
-    
 }

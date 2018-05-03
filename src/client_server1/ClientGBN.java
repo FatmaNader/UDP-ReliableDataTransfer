@@ -13,12 +13,13 @@ import java.util.zip.Checksum;
 
 public class ClientGBN {
 
-    public ClientGBN(String IP, int MainServer, int clientPort, String filename, int windowSize) {
+    public ClientGBN(String IP, int MainServer, int clientPort, String filename, int windowSize, DatagramSocket clientSocket) {
         this.IP = IP;
         this.MainServer = MainServer;
         this.clientPort = clientPort;
         this.filename = filename;
         this.windowSize = windowSize;
+        this.clientSocket = clientSocket;
 
     }
 
@@ -33,12 +34,13 @@ public class ClientGBN {
     public static String filename;
     int windowSize;
     int color;
+      static DatagramSocket clientSocket;
 
     public static void run() {
         try {
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 
-            DatagramSocket clientSocket = new DatagramSocket(clientPort);
+            // clientSocket = new DatagramSocket(clientPort);
 
             //define Ip an Socket
             InetAddress IPAddress = InetAddress.getByName(IP);

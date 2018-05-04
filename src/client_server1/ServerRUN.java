@@ -2,9 +2,7 @@ package client_server1;
 
 import java.net.*;
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -37,7 +35,9 @@ public class ServerRUN {
         for (int i = 0; i < 4; i++) {
             info[i] = br.readLine();
             //System.out.println(info[i]);
+
         }
+        br.close();
         return info;
     }
 
@@ -90,52 +90,59 @@ public class ServerRUN {
             byte[] uname = new byte[50];
             ClientServerUtils.copyArray(receiveInfo, uname, 0, 50);
             String name = new String(uname).trim();
-            ClientServerUtils.PRINT("name:  " + name, colour);
+            ClientServerUtils.PRINT("Username: " + name, colour);
             clientPort = receivePacket1.getPort();
-            System.out.println(clientPort);
+            //System.out.println(clientPort);
             byte[] pass = new byte[50];
             ClientServerUtils.copyArray1(receiveInfo, pass, 50, 50);
             String passw = new String(pass).trim();
             int id = Integer.parseInt(passw);
-            ClientServerUtils.PRINT("ID:  " + id, colour);
+            ClientServerUtils.PRINT("Password: " + ClientRUN.maskNumber(passw, "*"), colour);
             //System.out.println("pppp:  "+clients.get(12));
             if (clients.get(id) == null) {
-                ClientServerUtils.PRINT("ID NOT VALID", colour);
+                ClientServerUtils.PRINT("Password NOT VALID", colour);
                 byte[] b = new byte[1];
                 b[0] = 0;
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
             } else if (!clients.get(id).equals(name)) {
-                ClientServerUtils.PRINT("ID AND USERNAME DON'T MATCH", colour);
+                ClientServerUtils.PRINT("USERNAME AND PASSWORD DON'T MATCH", colour);
                 byte[] b = new byte[1];
                 b[0] = 0;
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
             } else {
-                ClientServerUtils.PRINT("Correct", colour);
+                ClientServerUtils.PRINT("Correct username and password", 2);
                 byte[] b = new byte[1];
                 b[0] = 1;
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
+              
 
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
+                int i = (int) receiveData[0];
+                //System.out.println("+++++++" + i);
+                byte[] Fn = new byte[120];
+                ClientServerUtils.copyArray1(receiveData, Fn, 1, receiveData.length - 1);
 
                 String Filename = new String(receiveData);
                 Filename = Filename.trim();
 
                 ClientServerUtils.PRINT("The server recieved request from client " + clientPort + " to get file: " + Filename, colour);
 
-                System.out.println("1) Stop and wait");
-                System.out.println("2) Go back N");
-                System.out.println("3) Selective repeat");
-                System.out.println("Please choose the mode to use: ");
-                Scanner scan = new Scanner(System.in);
+//                System.out.println("1) Stop and wait");
+//                System.out.println("2) Go back N");
+//                System.out.println("3) Selective repeat");
+//                System.out.println("Please choose the mode to use: ");
+//                Scanner scan = new Scanner(System.in);
 
 //                int i = scan.nextInt();
-int i =1;
+                //int i =2;
+                
                 switch (i) {
                     case 1:
+                       
                         //ServerRUN.mode=1;
                         ServerSW s_t = new ServerSW(clientPort, server_inc, Filename, IP_Address, colour, windowSize, plp, Result);
                         Thread thread = new Thread(s_t);

@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.Scanner;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -37,6 +35,7 @@ public class ClientRUN {
             info[i] = br.readLine();
             // System.out.println(info[i]);
         }
+        br.close();
         return info;
     }
 
@@ -60,6 +59,7 @@ public class ClientRUN {
 
         System.out.println("->Please enter your password");
         String password = s.nextLine();
+         System.out.println(maskNumber(password, "****"));
         byte []x = password.trim().getBytes();
         ClientServerUtils.copyArray(x, pass, 0, x.length);
         for (int i = username.length(); i < 50; i++) {
@@ -70,6 +70,18 @@ public class ClientRUN {
        
         
         client_info = ArrayUtils.addAll(uname, pass);
+          
+          System.out.println("->Files available at server to request");
+                File folder = new File("C:\\Users\\HP\\Documents\\NetBeansProjects\\UDP-ReliableDataTransfer-master\\files\\");
+                File[] listOfFiles = folder.listFiles();
+                for (int i = 0; i < listOfFiles.length; i++) {
+                    if (listOfFiles[i].isFile()) {
+                        System.out.println("File: " + listOfFiles[i].getName());
+                    } else if (listOfFiles[i].isDirectory()) {
+                        System.out.println("Directory " + listOfFiles[i].getName());
+                    }
+                }
+                
         System.out.println("->Please enter filename containing your info: ");
         String fileInfo = s.nextLine();
         String[] info = new String[5];
@@ -132,5 +144,24 @@ public class ClientRUN {
     }
     }
     
-
+   public static String maskNumber(String password, String mask) {
+ 
+      int index = 0;
+      StringBuilder masked = new StringBuilder();
+      for (int i = 0; i < mask.length(); i++) {
+         char c = mask.charAt(i);
+         if (c == '#') {
+            masked.append(password.charAt(index));
+            index++;
+         } else if (c == 'x') {
+            masked.append(c);
+            index++;
+         } else {
+            masked.append(c);
+         }
+      }
+      return masked.toString();
+   }
 }
+
+

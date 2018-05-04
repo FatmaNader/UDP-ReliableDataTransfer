@@ -34,26 +34,28 @@ public class ClientGBN {
     public static String filename;
     int windowSize;
     int color;
-      static DatagramSocket clientSocket;
+    static DatagramSocket clientSocket;
 
     public static void run() {
         try {
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 
             // clientSocket = new DatagramSocket(clientPort);
-
             //define Ip an Socket
             InetAddress IPAddress = InetAddress.getByName(IP);
 
             byte[] receiveData = new byte[512];
             byte[] init = new byte[8];
-            System.out.println("Welcome to selective repeat client!");
+            byte[] file_info = new byte[50];
+            System.out.println("Welcome to Go back N client!");
             System.out.println("-------------------------------------");
-            
+
             //get file name from user
             //String FileName = inFromUser.readLine();
-
-            DatagramPacket sendPacket = new DatagramPacket(filename.getBytes(), filename.getBytes().length, IPAddress, MainServer);
+            byte x = (byte) 2;
+            file_info[0] = x;
+            ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
+            DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, MainServer);
             clientSocket.send(sendPacket);
             DatagramPacket receivePacket = new DatagramPacket(init, init.length);
             clientSocket.receive(receivePacket);

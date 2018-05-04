@@ -10,7 +10,6 @@ import java.net.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
@@ -48,16 +47,19 @@ public class ClientSW {
            // DatagramSocket clientSocket = new DatagramSocket(clientPort);
             //define Ip an Socket
             InetAddress IPAddress = InetAddress.getByName(IP);
-
+            int num=1;
             byte[] receiveData = new byte[512];
             byte[] init = new byte[8];
-
+            byte [] file_info =new byte [50];
             System.out.println("Welcome to stop and wait client!");
             System.out.println("-------------------------------------");
-
+          
+            byte x = (byte) num;
+            file_info[0]= x;
+            ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
             //get file name from user
             //String FileName = inFromUser.readLine();
-            DatagramPacket sendPacket = new DatagramPacket(filename.getBytes(), filename.getBytes().length, IPAddress, MainServer);
+            DatagramPacket sendPacket = new DatagramPacket(file_info,file_info.length, IPAddress, MainServer);
             clientSocket.send(sendPacket);
 
             //the file name is sent we are supposed to wait for the file
@@ -84,30 +86,30 @@ public class ClientSW {
                 System.out.println("The packets needed to get file is:" + packets_needed);
 
             }
-            if (ThreadServer > 10000) {
-                System.out.println("HELOOOOOO MONICAAA");
-
-                DatagramPacket receivePacket1 = new DatagramPacket(init, init.length);
-                clientSocket.receive(receivePacket1);
-                if (receivePacket1 != null) {
-//            String pckts = new String(receivePacket.getData());
-                    byte[] xxy = new byte[4];
-                    xxy = Arrays.copyOfRange(init, 0, 4);
-
-                    ByteBuffer byx = ByteBuffer.wrap(xxy);
-                    ThreadServer = byx.getInt();
-
-                    byte[] xx = new byte[4];
-                    xx = Arrays.copyOfRange(init, 4, 8);
-
-                    ByteBuffer by = ByteBuffer.wrap(xx);
-                    packets_needed = by.getInt();
-
-                    System.out.println("The new client socket is: " + ThreadServer);
-                    System.out.println("The packets needed to get file is:" + packets_needed);
-
-                }
-            }
+//            if (ThreadServer > 10000) {
+//                System.out.println("HELOOOOOO MONICAAA");
+//
+//                DatagramPacket receivePacket1 = new DatagramPacket(init, init.length);
+//                clientSocket.receive(receivePacket1);
+//                if (receivePacket1 != null) {
+////            String pckts = new String(receivePacket.getData());
+//                    byte[] xxy = new byte[4];
+//                    xxy = Arrays.copyOfRange(init, 0, 4);
+//
+//                    ByteBuffer byx = ByteBuffer.wrap(xxy);
+//                    ThreadServer = byx.getInt();
+//
+//                    byte[] xx = new byte[4];
+//                    xx = Arrays.copyOfRange(init, 4, 8);
+//
+//                    ByteBuffer by = ByteBuffer.wrap(xx);
+//                    packets_needed = by.getInt();
+//
+//                    System.out.println("The new client socket is: " + ThreadServer);
+//                    System.out.println("The packets needed to get file is:" + packets_needed);
+//
+//                }
+//            }
 
             //clientSocket.receive(receivePacket);
             get_file(clientSocket);

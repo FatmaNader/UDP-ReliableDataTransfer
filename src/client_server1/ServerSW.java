@@ -38,17 +38,18 @@ public class ServerSW implements Runnable {
         this.Result = Result;
 
         //this.serverSocket=serverSocket;
+        
     }
 
     public void run() {
 
         try {
-            System.out.println("Welcome to stop and wait server!");
-            System.out.println("-------------------------------------");
-            System.out.println("Client port here :" + client_port);
+            ClientServerUtils.PRINT("Welcome to stop and wait server!",colour);
+            ClientServerUtils.PRINT("-------------------------------------",colour);
+           ClientServerUtils.PRINT("Client port here :" + client_port,colour);
             file_bytes = ClientServerUtils.loadFile(Filename, file_bytes, Dpacket_length, client_port, colour);
             packets_needed = (file_bytes.length / Dpacket_length) + 1;
-            System.out.println("User " + client_port + "  packets needed to send: " + Integer.toString(packets_needed));
+            ClientServerUtils.PRINT("User " + client_port + "  packets needed to send: " + Integer.toString(packets_needed),colour);
 
             byte initialize[] = new byte[8];
             ByteBuffer bx = ByteBuffer.allocate(4);
@@ -74,7 +75,7 @@ public class ServerSW implements Runnable {
             } catch (IOException ex) {
                 Logger.getLogger(ServerSW.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("User " + client_port + " SEND FILE FINISHED");
+            ClientServerUtils.PRINT("User " + client_port + " SEND FILE FINISHED",colour);
             serverSocket.close();
 
         } catch (SocketException ex) {
@@ -85,9 +86,9 @@ public class ServerSW implements Runnable {
 
     public void SendFile(DatagramSocket serverSocket) throws IOException {
 
-        System.out.println("User " + client_port + " SEND FILE BEGIN");
+        ClientServerUtils.PRINT("User " + client_port + " SEND FILE BEGIN",colour);
 
-        System.out.println("----------------------------------------------------------------");
+        ClientServerUtils.PRINT("----------------------------------------------------------------",colour);
 
         Checksum ch = new CRC32();
         byte[] data_to_send, packet_to_send;
@@ -155,10 +156,10 @@ public class ServerSW implements Runnable {
             if (dropafter != Result) {
 
                 ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
-                System.out.println("Sent packet with sequence number: " + (i % 2));
+                ClientServerUtils.PRINT("Sent packet with sequence number: " + (i % 2),colour);
             } else {
                 // dropafter = (int) (1 / plp);
-                System.out.println("Packet with sequence number: " + i + " is lost!");
+                ClientServerUtils.PRINT("Packet with sequence number: " + i + " is lost!",colour);
             }
             dropafter++;
             if (dropafter == (int) (1 / plp)) {
@@ -170,9 +171,9 @@ public class ServerSW implements Runnable {
             {
                 while ((recieve_Ack(serverSocket, i)) == false) {
 
-                    System.out.println("Packet " + i + " timeout!");
+                    ClientServerUtils.PRINT("Packet " + i + " timeout!",colour);
 
-                    System.out.println("Resending packet with sequence number: " + i);
+                    ClientServerUtils.PRINT("Resending packet with sequence number: " + i,colour);
                     if (rightChecksum != checksum) {
                         ByteBuffer bxx = ByteBuffer.allocate(8);
                         byte[] by;
@@ -204,13 +205,13 @@ public class ServerSW implements Runnable {
             serverSocket.receive(receivePacket);
         } catch (SocketTimeoutException ex) {
             flag = false;
-            System.out.println("The user " + client_port + "time out");
+           // ClientServerUtils.PRINT("The user " + client_port + "time out",colour);
         }
 
         int ack_seq = ClientServerUtils.server_get_seq_no(receivePacket.getData());
         int seq11 = (ack_seq) % 2;
-        System.out.println("Received Acknowledgment with sequence number: " + seq11);
-        System.out.println("----------------------------------------------------------------");
+        ClientServerUtils.PRINT("Received Acknowledgment with sequence number: " + seq11,colour);
+        ClientServerUtils.PRINT("----------------------------------------------------------------",colour);
 
         //See If positive or TIMEOUT
         if (receivePacket.getData()[0] == -1 || ack_seq != seq || flag == false) {

@@ -181,6 +181,8 @@ public class ServerGBN implements Runnable {
         int resendCounter = 0;
         int y[] = new int[2];
         ClientServerUtils.PRINT("->Finished sending all packets first time",colour);
+        
+       // loop untill all packets are recieved
         while (!isLastAckPacket) {
 
             boolean ackReceived = false;
@@ -190,8 +192,7 @@ public class ServerGBN implements Runnable {
             y = recieve_Ack(serverSocket, last_ack);
             ackSequenceNum = y[1];
 
-            // whenever ack is received, break to receive other acknowledgments
-            // else, resend all unacknowledged packets in the current window
+          
             if (y[0] == 1) {
                 last_ack = ackSequenceNum;
                 ClientServerUtils.PRINT("Received acknowledgment with sequence number: " + ackSequenceNum,colour);

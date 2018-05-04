@@ -57,9 +57,8 @@ public class ClientSelectiveRpt {
             byte x = (byte) 3;
             file_info[0] = x;
             ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
+            
             //get file name from user
-            //String FileName = inFromUser.readLine();
-
             DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, WellKnownServer);
             clientSocket.send(sendPacket);
 
@@ -68,7 +67,7 @@ public class ClientSelectiveRpt {
             clientSocket.receive(receivePacket);
 
             if (receivePacket != null) {
-//            String pckts = new String(receivePacket.getData());
+
                 byte[] xxy = new byte[4];
                 xxy = Arrays.copyOfRange(init, 0, 4);
 
@@ -87,32 +86,32 @@ public class ClientSelectiveRpt {
                 System.out.println("-----------------------------------------------------------------------------------------------------------------");
 
             }
-            if (NClientSocket > 10000) {
-                System.out.println("HELOOOOOO MONICAAA");
-
-                DatagramPacket receivePacket1 = new DatagramPacket(init, init.length);
-                clientSocket.receive(receivePacket1);
-                if (receivePacket1 != null) {
-//            String pckts = new String(receivePacket.getData());
-                    byte[] xxy = new byte[4];
-                    xxy = Arrays.copyOfRange(init, 0, 4);
-
-                    ByteBuffer byx = ByteBuffer.wrap(xxy);
-                    NClientSocket = byx.getInt();
-
-                    byte[] xx = new byte[4];
-                    xx = Arrays.copyOfRange(init, 4, 8);
-
-                    ByteBuffer by = ByteBuffer.wrap(xx);
-                    packets_needed = by.getInt();
-
-                    System.out.println("The new client socket is: " + NClientSocket);
-
-                    System.out.println("The packets needed to get file is:" + packets_needed);
-
-                }
-            }
-            //clientSocket.receive(receivePacket);
+//            if (NClientSocket > 10000) {
+//                System.out.println("HELOOOOOO MONICAAA");
+//
+//                DatagramPacket receivePacket1 = new DatagramPacket(init, init.length);
+//                clientSocket.receive(receivePacket1);
+//                if (receivePacket1 != null) {
+////            String pckts = new String(receivePacket.getData());
+//                    byte[] xxy = new byte[4];
+//                    xxy = Arrays.copyOfRange(init, 0, 4);
+//
+//                    ByteBuffer byx = ByteBuffer.wrap(xxy);
+//                    NClientSocket = byx.getInt();
+//
+//                    byte[] xx = new byte[4];
+//                    xx = Arrays.copyOfRange(init, 4, 8);
+//
+//                    ByteBuffer by = ByteBuffer.wrap(xx);
+//                    packets_needed = by.getInt();
+//
+//                    System.out.println("The new client socket is: " + NClientSocket);
+//
+//                    System.out.println("The packets needed to get file is:" + packets_needed);
+//
+//                }
+//            }
+          
             get_file(clientSocket);
 
             System.out.println("The file is received successfully");
@@ -190,21 +189,19 @@ public class ClientSelectiveRpt {
         Checksum ch = new CRC32();
 
         long expected_checkSum = ClientServerUtils.get_checkSum(bytes_rec);
-        //System.out.println("EXPECTED CHECK SUM IS:" + expected_checkSum);
         int seq_no = ClientServerUtils.get_seq_no(bytes_rec, detail_length);
-
+            
         int len = ClientServerUtils.get_dataLength(bytes_rec);
         data_rec = Arrays.copyOfRange(bytes_rec, detail_length, len + detail_length);
         InetAddress IPAddress = InetAddress.getByName(IP);
         ch.update(data_rec, 0, data_rec.length);
         long current_checksum = ch.getValue();
 
-        //System.out.println("SEQUENCE NO : " +seq_no);
+    ///Here we recieve packet if it is in the window
         if (seq_no > WindowBase && seq_no < WindowBase + windowSize && current_checksum == expected_checkSum) {
 
             Packets.get(seq_no).isRecieved = true;
             Packets.get(seq_no).data = data_rec;
-            //System.out.println("Window base: " + (WindowBase+1)+ "           Window high: " + (WindowBase+windowSize));
             System.out.println("Received packet with sequence number " + seq_no + " length " + len + " expected checksum " + expected_checkSum
                     + " and current checksum: " + current_checksum);
 
@@ -222,10 +219,10 @@ public class ClientSelectiveRpt {
                     }
                 }
             }
+            //if packets are corrupted
         } else if (current_checksum != expected_checkSum) {
             System.err.println("Packet corrupted!");
-            System.out.println("Received packet with sequence number " + seq_no + " length " + len + " expected checksum " + expected_checkSum
-                    + " and current checksum: " + current_checksum);
+            System.out.println("Received packet with sequence number " + seq_no + " length " + len + " expected checksum " + expected_checkSum  + " and current checksum: " + current_checksum);
         }
 
         return WindowBase;

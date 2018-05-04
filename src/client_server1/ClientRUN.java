@@ -74,7 +74,7 @@ public class ClientRUN {
 
           
           System.out.println("->Files available at server to request");
-                File folder = new File("C:\\Users\\HP\\Documents\\NetBeansProjects\\UDP-ReliableDataTransfer-master\\files\\");
+                File folder = new File("D:\\Projects\\UDP-ReliableDataTransfer\\files");
                 File[] listOfFiles = folder.listFiles();
                 for (int i = 0; i < listOfFiles.length; i++) {
                     if (listOfFiles[i].isFile()) {
@@ -83,7 +83,9 @@ public class ClientRUN {
                         System.out.println("Directory " + listOfFiles[i].getName());
                     }
                 }
-
+                
+                
+                //Read the fileee that contain the details
         System.out.println("->Please enter filename containing your info: ");
         String fileInfo = s.nextLine();
         String[] info = new String[5];

@@ -74,9 +74,7 @@ public class ServerSelectiveRpt implements Runnable {
             this.seq_no = seq_no;
         }
 
-        public long getTime() {
-            return time;
-        }
+   
 
         public void setTime(int time) {
             this.time = time;
@@ -146,6 +144,7 @@ public class ServerSelectiveRpt implements Runnable {
         int windowBase = -1;
         long checksum = 0;
         long rightChecksum;
+        
         while (PCKT_NO < packets_needed) {
 
             if (PCKT_NO > windowBase && PCKT_NO <= windowBase + windowSize) {   // if pipeline is not full
@@ -165,21 +164,23 @@ public class ServerSelectiveRpt implements Runnable {
                                 ClientServerUtils.Send_Data(serverSocket, allPackets.get(timerseq).packet, IPAddress, client_port);
                                 ClientServerUtils.PRINT("User " + client_port + " Resending packet with sequence number: " + timerseq, colour);
                                 // this.x=false;
-                                this.cancel();
+                                run();
                             } catch (IOException ex) {
                                 System.err.println("ERROR!");
                                 Logger.getLogger(ServerSelectiveRpt.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
+                        else 
+                            this.cancel();
                     }
 
                 };
                 pkt_timer.schedule(pkt_action, 200);
 
+                //corrupt the packet
                 if (corruptionafter == 0) {
                     rightChecksum = checksum;
                     checksum = 1;
-
                     ByteBuffer bx = ByteBuffer.allocate(8);
                     bx.putLong(checksum);
                     byte[] b;
@@ -188,7 +189,7 @@ public class ServerSelectiveRpt implements Runnable {
                     allPackets.get(PCKT_NO).packet = packet_to_send;
                 }
                 corruptionafter--;
-                //serverSocket.setSoTimeout(50);
+               
                
                 if (dropafter != Result) {
                     ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
@@ -204,9 +205,10 @@ public class ServerSelectiveRpt implements Runnable {
                 if (dropafter == (int) (1 / plp)) {
                     dropafter = 0;
                 }
-                // System.out.println("Corruption is :"+corruptionafter);
+               
+                //begin counting for the next corruption
                 if (corruptionafter == -1) {
-                    //System.out.println("righting the checkSum Of Packet:" + PCKT_NO);
+                   
                     packet_to_send = get_packet(PCKT_NO);
                     allPackets.get(PCKT_NO).packet = packet_to_send;
                     corruptionafter = (int) (1 / plc);
@@ -222,10 +224,8 @@ public class ServerSelectiveRpt implements Runnable {
 
                     int ackSeq = recieve_Ack(serverSocket);
 
-                    // whenever ack is received, break to send next packet
-                    // else, resend all
-                    //System.out.println("ACKING nowwwww" + (ackSeq));
-                    //last_ack = ackSeq;
+                    // whenever ack is received, break to send next packet else, resend all 
+                   
                     allPackets.get(ackSeq).setIsAck(true);
                     ClientServerUtils.PRINT("User " + client_port + " Received Acknowledgment with sequence number: " + ackSeq, colour);
 
@@ -243,14 +243,6 @@ public class ServerSelectiveRpt implements Runnable {
                         }
                     }
                     break;
-//                    } else {
-//                        for (int j = windowBase + 1; j < PCKT_NO; j++) {
-//
-//                            packet_to_send = get_packet(j - 1);
-//                            Send_Data(serverSocket, packet_to_send);
-//                            //retransmissionCounter += 1;
-//                            System.out.println(" Resending packet with sequence number: " + j);
-//                        }
 
                 }
             }
@@ -268,12 +260,8 @@ public class ServerSelectiveRpt implements Runnable {
 
             ackSequenceNum = recieve_Ack(serverSocket);
 
-            // whenever ack is received, break to receive other acknowledgments
-            // else, resend all unacknowledged packets in the current window
-            allPackets.get(ackSequenceNum).setIsAck(true);
-            // last_ack = ackSequenceNum;
+            allPackets.get(ackSequenceNum).setIsAck(true);  
             ClientServerUtils.PRINT("User " + client_port + " Received acknowledgment with sequence number: " + ackSequenceNum, colour);
-
             if (ackSequenceNum == windowBase + 1) {
 
                 //System.out.println(" Helooo heree   " + ackSequenceNum);
@@ -288,9 +276,7 @@ public class ServerSelectiveRpt implements Runnable {
                 }
             }
 
-            // if ack sequence number == last packet's sequence number,
-            // set isLastAckPacket to true so that we can break from the while loop and close the socket
-            //System.out.println("WINDOOOOW BASEEE:" + windowBase);
+            // if ack sequence number == last packet's sequence number, set isLastAckPacket to true so that we can break from the while loop and close the socket
             if (windowBase == (packets_needed - 1)) {
                 isLastAckPacket = true;
                 ClientServerUtils.PRINT("User " + client_port + " Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
@@ -305,17 +291,12 @@ public class ServerSelectiveRpt implements Runnable {
 
     public static int recieve_Ack(DatagramSocket serverSocket) throws SocketException, IOException {
         //WAIT FOR ACK
-//        boolean flag = true;
         byte[] Ack = new byte[5];
 
-        // serverSocket.setSoTimeout(10);
         DatagramPacket receivePacket = new DatagramPacket(Ack, Ack.length);
         serverSocket.receive(receivePacket);
         int ack_seq = ClientServerUtils.server_get_seq_no(receivePacket.getData());
 
-        // System.out.println("The user " + client_port + "**ACK recieved: " + seq11);
-        //See If positive or TIMEOUT
-        // System.out.println("The user " + client_port + "the type of packet: " + receivePacket.getData()[0]);
         return ack_seq;
 
     }
@@ -339,7 +320,7 @@ public class ServerSelectiveRpt implements Runnable {
         s = b1.array();
         ClientServerUtils.copyArray(s, packet_detail, 0, 2);
 
-        // System.out.println("The user " + client_port + "DAATA LENGTH IS :" + data_to_send.length);
+        
         //we must send the checksum in the packet
         // update the current checksum with the specified array of bytes
         ch.update(data_to_send, 0, data_to_send.length);
@@ -352,26 +333,19 @@ public class ServerSelectiveRpt implements Runnable {
         ByteBuffer bx = ByteBuffer.allocate(8);
 
         bx.putLong(checksum);
-        //-------------------
-        //buffer to array
         b = bx.array();
         ClientServerUtils.copyArray(b, packet_detail, 2, 8);
-        //  System.out.println("The user " + client_port + "THE CHECKSum  sent is:" + checksum);
         ch.reset();
 
         //we must send the sequence no of the packet
         ByteBuffer bz = ByteBuffer.allocate(4);
         bz.putInt(PCKT_NO);
-        //-------------------
-        //buffer to array
         byte seq_no[] = new byte[4];
         seq_no = bz.array();
         ClientServerUtils.copyArray(seq_no, packet_detail, 10, 4);
         packet_to_send = ArrayUtils.addAll(packet_detail, data_to_send);
 
         String d = new String(data_to_send);
-        //System.out.println("data to send:\n" + d);
-
         return packet_to_send;
     }
 

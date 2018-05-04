@@ -77,31 +77,6 @@ public class ClientGBN {
                 System.out.println("The packets needed to get file is:" + packets_needed);
 
             }
-            if (NClientSocket > 10000) {
-                System.out.println("HELOOOOOO MONICAAA");
-
-                DatagramPacket receivePacket1 = new DatagramPacket(init, init.length);
-                clientSocket.receive(receivePacket1);
-                if (receivePacket1 != null) {
-//            String pckts = new String(receivePacket.getData());
-                    byte[] xxy = new byte[4];
-                    xxy = Arrays.copyOfRange(init, 0, 4);
-
-                    ByteBuffer byx = ByteBuffer.wrap(xxy);
-                    NClientSocket = byx.getInt();
-
-                    byte[] xx = new byte[4];
-                    xx = Arrays.copyOfRange(init, 4, 8);
-
-                    ByteBuffer by = ByteBuffer.wrap(xx);
-                    packets_needed = by.getInt();
-
-                    System.out.println("The new client socket is: " + NClientSocket);
-                    System.out.println("The packets needed to get file is:" + packets_needed);
-
-                }
-            }
-            //clientSocket.receive(receivePacket);
             get_file(clientSocket);
 
             System.out.println("The file is received successfully");
@@ -122,9 +97,10 @@ public class ClientGBN {
 
     public static void get_file(DatagramSocket clientSocket) throws IOException {
         int SequenceNum = 0;
+        
         while (SequenceNum < packets_needed) {
+             //recieve Packet 
             long[] x = recieve_packet(clientSocket, SequenceNum);
-
             long seq_no = x[0];
             long expected_checkSum = x[1];
             long curr_sheckSum = x[2];
@@ -137,16 +113,14 @@ public class ClientGBN {
                     System.out.println("Packet is with wrong sequence number!");
                 }
                 System.out.println(" Expected sequence number: " + SequenceNum + " but recieved seq no is" + seq_no);
-                //DON'T Send Negative Acknowledge
-                //recieve retransmited data
+                // if there is error SEND ACK with previous sequence no
                 ClientServerUtils.sendAck(clientSocket, SequenceNum - 1, IP, NClientSocket);
                 x = recieve_packet(clientSocket, SequenceNum);
                 seq_no = x[0];
                 expected_checkSum = x[1];
                 curr_sheckSum = x[2];
-            } //IF THERE IS NO ERROR SEND POSITIVE ACKNOWLEDGEMENT
-
-            //Send POSTITVE Acknowledge
+            }
+            //IF THERE IS NO ERROR SEND POSITIVE ACKNOWLEDGEMENT
             byte type = 1;
             ClientServerUtils.sendAck(clientSocket, SequenceNum, IP, NClientSocket);
             SequenceNum++;

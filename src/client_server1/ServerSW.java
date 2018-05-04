@@ -57,6 +57,7 @@ public class ServerSW implements Runnable {
             byte result1[] = new byte[4];
             result1 = bx.array();
             System.out.println("User " + client_port + " server port: " + server_port);
+            
             ClientServerUtils.copyArray(result1, initialize, 0, 4);
             ByteBuffer b = ByteBuffer.allocate(4);
             b.putInt(packets_needed);
@@ -112,9 +113,8 @@ public class ServerSW implements Runnable {
             s = b1.array();
             ClientServerUtils.copyArray(s, packet_detail, 0, 2);
 
-            //System.out.println("The user "+client_port+"DAATA LENGTH IS :" + data_to_send.length);
-            //we must send the checksum in the packet
-            // update the current checksum with the specified array of bytes
+            
+            //we must send the checksum in the packet  And update the current checksum with the specified array of bytes
             ch.update(data_to_send, 0, data_to_send.length);
             long checksum;
             if (corruptionafter != 0) {
@@ -130,18 +130,14 @@ public class ServerSW implements Runnable {
             ByteBuffer bx = ByteBuffer.allocate(8);
 
             bx.putLong(checksum);
-            //-------------------
-            //buffer to array
+         
             b = bx.array();
             ClientServerUtils.copyArray(b, packet_detail, 2, 8);
-            //System.out.println("The user "+client_port+"THE CHECKSum  sent is:" + checksum);
             ch.reset();
 
             //we must send the sequence no of the packet
             ByteBuffer bz = ByteBuffer.allocate(4);
             bz.putInt(i);
-            //-------------------
-            //buffer to array
             byte seq_no[] = new byte[4];
             seq_no = bz.array();
             ClientServerUtils.copyArray(seq_no, packet_detail, 10, 4);
@@ -149,16 +145,13 @@ public class ServerSW implements Runnable {
             packet_to_send = ArrayUtils.addAll(packet_detail, data_to_send);
 
             String d = new String(data_to_send);
-            //System.out.println("data to send:\n" + d);
-
-            //long time = System.currentTimeMillis();
+            
             //SEND DATA
             if (dropafter != Result) {
-
                 ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                 ClientServerUtils.PRINT("Sent packet with sequence number: " + (i % 2),colour);
             } else {
-                // dropafter = (int) (1 / plp);
+              
                 ClientServerUtils.PRINT("Packet with sequence number: " + i + " is lost!",colour);
             }
             dropafter++;
@@ -166,7 +159,7 @@ public class ServerSW implements Runnable {
                 dropafter = 0;
             }
             count = count + Dpacket_length;
-            //System.out.println("Sent packet with sequence number : " + i);
+ 
             //WAIT FOR ACK
             {
                 while ((recieve_Ack(serverSocket, i)) == false) {
@@ -174,18 +167,15 @@ public class ServerSW implements Runnable {
                     ClientServerUtils.PRINT("Packet " + i + " timeout!",colour);
 
                     ClientServerUtils.PRINT("Resending packet with sequence number: " + i,colour);
+                    
+                    //Right the check sum if the packet was corrupted
                     if (rightChecksum != checksum) {
                         ByteBuffer bxx = ByteBuffer.allocate(8);
                         byte[] by;
-
                         bxx.putLong(rightChecksum);
-                        //-------------------
-                        //buffer to array
                         by = bxx.array();
                         ClientServerUtils.copyArray(by, packet_to_send, 2, 8);
-                        //System.out.println("The user "+client_port+"-------THE RIGHT CHECKSum  sent is:" + rightChecksum);
                         ClientServerUtils.get_checkSum(packet_to_send);
-
                     }
                     ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                 }

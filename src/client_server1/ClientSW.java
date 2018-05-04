@@ -63,8 +63,9 @@ public class ClientSW {
             clientSocket.send(sendPacket);
 
             //the file name is sent we are supposed to wait for the file
-            //get packets_needed to recieve file
-            //GET PACKETS NEEDED TO RECIEVE FILE
+            
+            //recieved packets_needed to recieve  and the server to listen and acknowledge to
+          
             DatagramPacket receivePacket = new DatagramPacket(init, init.length);
             clientSocket.receive(receivePacket);
 
@@ -72,7 +73,6 @@ public class ClientSW {
 //            String pckts = new String(receivePacket.getData());
                 byte[] xxy = new byte[4];
                 xxy = Arrays.copyOfRange(init, 0, 4);
-
                 ByteBuffer byx = ByteBuffer.wrap(xxy);
                 ThreadServer = byx.getInt();
 
@@ -86,30 +86,6 @@ public class ClientSW {
                 System.out.println("The packets needed to get file is:" + packets_needed);
 
             }
-//            if (ThreadServer > 10000) {
-//                System.out.println("HELOOOOOO MONICAAA");
-//
-//                DatagramPacket receivePacket1 = new DatagramPacket(init, init.length);
-//                clientSocket.receive(receivePacket1);
-//                if (receivePacket1 != null) {
-////            String pckts = new String(receivePacket.getData());
-//                    byte[] xxy = new byte[4];
-//                    xxy = Arrays.copyOfRange(init, 0, 4);
-//
-//                    ByteBuffer byx = ByteBuffer.wrap(xxy);
-//                    ThreadServer = byx.getInt();
-//
-//                    byte[] xx = new byte[4];
-//                    xx = Arrays.copyOfRange(init, 4, 8);
-//
-//                    ByteBuffer by = ByteBuffer.wrap(xx);
-//                    packets_needed = by.getInt();
-//
-//                    System.out.println("The new client socket is: " + ThreadServer);
-//                    System.out.println("The packets needed to get file is:" + packets_needed);
-//
-//                }
-//            }
 
             //clientSocket.receive(receivePacket);
             get_file(clientSocket);
@@ -139,8 +115,7 @@ public class ClientSW {
 
         //get data needed from the packet
         data_rec = Arrays.copyOfRange(bytes_rec, detail_length, len + detail_length);
-        //String debug = new String(data_rec);
-        //System.out.println("packet:\n" + debug);
+        
 
         //get checkSum from the packet
         int seq_no = ClientServerUtils.get_seq_no(bytes_rec, detail_length);
@@ -165,17 +140,17 @@ public class ClientSW {
 
     //recieve file from sender
     public static void get_file(DatagramSocket clientSocket) throws IOException {
-
-        // System.out.println("-------PACKETS NEEDED------" + packets_needed);
-        int w;
-        for (w = 0; w < packets_needed; w++) {
-            //System.out.println("this is packet no" + w);
-
+  
+      //Loop untill all packets are recieved
+        for (int w = 0; w < packets_needed; w++) {
+           
+           //recieve the packet
             long[] x = recieve_packet(clientSocket, w);
 
             long seq_no = x[0];
             long expected_checkSum = x[1];
             long curr_sheckSum = x[2];
+            
             //IF THERE IS ERROR 
             while (curr_sheckSum != expected_checkSum || seq_no != w) {
                 if (curr_sheckSum != expected_checkSum) {
@@ -185,20 +160,13 @@ public class ClientSW {
                     System.out.println("Packet is with wrong sequence number!");
                 }
                 System.out.println("The number of Packets Lost is: " + (seq_no - w));
-                //System.out.println("+++++++++SEND NEGATIVE ACKNOWLEDGE ++++++++");
-
-                //DON'T Send Negative Acknowledge
-//                byte type = -1;
-//                sendAck(clientSocket, type, w);
-                //recieve retransmited data
                 x = recieve_packet(clientSocket, w);
                 seq_no = x[0];
                 expected_checkSum = x[1];
                 curr_sheckSum = x[2];
-            } //IF THERE IS NO ERROR SEND POSITIVE ACKNOWLEDGEMENT
+            } 
+             //IF THERE IS NO ERROR SEND POSITIVE ACKNOWLEDGEMENT
 
-            //Send POSTITVE Acknowledge
-            byte type = 1;
             ClientServerUtils.sendAck(clientSocket, w, IP, ThreadServer);
 
         }

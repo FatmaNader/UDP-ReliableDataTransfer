@@ -27,17 +27,15 @@ public class ServerRUN {
     }
 
     public static String[] Read_server_file() throws FileNotFoundException, IOException {
+        
         File file = new File("server.in.txt");
-
         BufferedReader br = new BufferedReader(new FileReader(file));
-
         String[] info = new String[4];
         //well known server window randomseed plp
         for (int i = 0; i < 4; i++) {
             info[i] = br.readLine();
-            //System.out.println(info[i]);
-
         }
+        
         br.close();
         return info;
     }
@@ -61,20 +59,22 @@ public class ServerRUN {
         init_clients();
 
         String[] info = new String[4];
+        
+        //Get info from serever file
         info = Read_server_file();
         int serverPort = Integer.parseInt(info[0].trim());
         int windowSize = Integer.parseInt(info[1].trim());
         int RandomSeed = Integer.parseInt(info[2].trim());
         double plp = Double.parseDouble(info[3].trim());
-        //System.out.println(plp);
+        
+        //Calculate the  Random packet lost 
         int Result = RandomTest(RandomSeed, plp);
         int server_inc = 9877;
         DatagramSocket serverSocket;
-        //int serverPort = 9876;
         int colour = -1;
         serverSocket = new DatagramSocket(serverPort);
+        
         System.out.println("Main server is listening to requests on port: " + serverPort);
-
         while (true) {
             if (colour == 5) {
                 colour = -1;
@@ -83,10 +83,12 @@ public class ServerRUN {
             int clientPort;
             InetAddress IP_Address;
             byte[] receiveData = new byte[100];
-
             byte[] receiveInfo = new byte[100];
+            
+            //recieve packet containing username and password
             DatagramPacket receivePacket1 = new DatagramPacket(receiveInfo, receiveInfo.length);
             serverSocket.receive(receivePacket1);
+            
             IP_Address = receivePacket1.getAddress();
             byte[] uname = new byte[50];
             ClientServerUtils.copyArray(receiveInfo, uname, 0, 50);
@@ -102,7 +104,7 @@ public class ServerRUN {
             String passw = new String(pass).trim();
             int id = Integer.parseInt(passw);
             ClientServerUtils.PRINT("Password: " + ClientRUN.maskNumber(passw, "***"), colour);
-            //System.out.println("pppp:  "+clients.get(12));
+            
             if (clients.get(id) == null) {
                 ClientServerUtils.PRINT("Password NOT VALID", colour);
 
@@ -124,13 +126,14 @@ public class ServerRUN {
 
                 byte[] b = new byte[1];
                 b[0] = 1;
+                //Send ack
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
-
+                 // recieve File name and metod type
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
                 int i = (int) receiveData[0];
-                //System.out.println("+++++++" + i);
+               
                 byte[] Fn = new byte[120];
                 ClientServerUtils.copyArray1(receiveData, Fn, 1, receiveData.length - 1);
 
@@ -138,15 +141,6 @@ public class ServerRUN {
                 Filename = Filename.trim();
 
                 ClientServerUtils.PRINT("The server recieved request from client " + clientPort + " to get file: " + Filename, colour);
-
-//                System.out.println("1) Stop and wait");
-//                System.out.println("2) Go back N");
-//                System.out.println("3) Selective repeat");
-//                System.out.println("Please choose the mode to use: ");
-//                Scanner scan = new Scanner(System.in);
-
-//                int i = scan.nextInt();
-                //int i =2;
                 
                 switch (i) {
                     case 1:

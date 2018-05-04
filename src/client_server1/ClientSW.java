@@ -54,7 +54,8 @@ public class ClientSW {
             byte [] file_info =new byte [50];
             System.out.println("Welcome to stop and wait client!");
             System.out.println("-------------------------------------");
-           byte x = (byte) num;
+          
+            byte x = (byte) num;
             file_info[0]= x;
             ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
             //get file name from user

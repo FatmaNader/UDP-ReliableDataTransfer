@@ -50,13 +50,17 @@ public class ClientSelectiveRpt {
 
             byte[] receiveData = new byte[512];
             byte[] init = new byte[8];
+            byte [] file_info =new byte [50];
             System.out.println("Welcome to selective repeat client!");
             System.out.println("-------------------------------------");
             
+             byte x = (byte) 3;
+            file_info[0]= x;
+            ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
             //get file name from user
             //String FileName = inFromUser.readLine();
 
-            DatagramPacket sendPacket = new DatagramPacket(filename.getBytes(), filename.getBytes().length, IPAddress, WellKnownServer);
+            DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, WellKnownServer);
             clientSocket.send(sendPacket);
             DatagramPacket receivePacket = new DatagramPacket(init, 
                     init.length);

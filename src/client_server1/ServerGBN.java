@@ -161,12 +161,10 @@ public class ServerGBN implements Runnable {
                             ClientServerUtils.PRINT("----------------------------------------------------------------",colour);
                         }
                         break;
-                    } else {
+                    } else if (ackReceived==0){
                         for (int j = windowBase + 1; j < PCKT_NO; j++) {
-
                             packet_to_send = ClientServerUtils.get_packet(j - 1, Dpacket_length, detail_length, file_bytes);
                             ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
-                            retransmissionCounter += 1;
                             ClientServerUtils.PRINT("Packet " + j + " timeout!",colour);
                             ClientServerUtils.PRINT("Resending packet with sequence number: " + j,colour);
                         }
@@ -251,16 +249,23 @@ public class ServerGBN implements Runnable {
         int ack_seq = ClientServerUtils.server_get_seq_no(receivePacket.getData());
 
         //See If positive or TIMEOUT
-        if (receivePacket.getData()[0] == -1 || flag == false || ack_seq != (last_ack + 1)) {
+        if (flag == false ) {
             x[0] = 0;
             x[1] = ack_seq;
             return x;
-        } else {
+        } 
+        else if ( ack_seq != (last_ack + 1))
+        {
+            x[0]=2;
+            x[1]=ack_seq;
+            return x;
+        }
+        else
+        {
             x[0] = 1;
             x[1] = ack_seq;
             return x;
         }
-
     }
 
 }

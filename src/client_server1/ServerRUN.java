@@ -119,13 +119,17 @@ public class ServerRUN {
                 b[0] = 1;
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
-
+                
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
-
+                int i = (int)receiveData[0];
+                System.out.println("+++++++"+i);
+                byte []Fn = new  byte [120];
+                ClientServerUtils.copyArray1(receiveData, Fn, 1, receiveData.length-1);
+                
                 String Filename = new String(receiveData);
                 Filename = Filename.trim();
-
+             
                 ClientServerUtils.PRINT("The server recieved request from client " + clientPort + " to get file: " + Filename, colour);
 
                 System.out.println("1) Stop and wait");
@@ -135,7 +139,7 @@ public class ServerRUN {
                 Scanner scan = new Scanner(System.in);
 
 //                int i = scan.nextInt();
-                int i =2;
+                //int i =2;
                 switch (i) {
                     case 1:
                         //ServerRUN.mode=1;

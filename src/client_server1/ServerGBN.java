@@ -18,50 +18,50 @@ import java.util.zip.Checksum;
 
 public class ServerGBN implements Runnable {
 
-    public static int client_port;
-    public static int server_port;
-    public static InetAddress IPAddress;
-    public static String Filename;
-    public static int packets_needed;
-    public static int Dpacket_length = 500;
-    public static byte[] file_bytes;    // file of interest converted to bytes
-    public static int detail_length = 14;
-    public static double plp ;
-    public static double plc = 0;   //the length of data in every packet
-    public static int windowSize;
-    public static int dropafter = 0;
-    public static int retransmissionCounter = 0;
+    public int client_port;
+    public int server_port;
+    public InetAddress IPAddress;
+    public String Filename;
+    public int packets_needed;
+    public int Dpacket_length = 500;
+    public byte[] file_bytes;    // file of interest converted to bytes
+    public int detail_length = 14;
+    public double plp;
+    public double plc = 0;   //the length of data in every packet
+    public int windowSize;
+    public int dropafter = 0;
+    public int retransmissionCounter = 0;
     int colour;
-    public static int Result;
+    public int Result;
 
     public ServerGBN(int client_port, int Server_port, String Filename, InetAddress IPAddress, int colour, int windowSize, double plp, int Result) {
         this.server_port = Server_port;
         this.client_port = client_port;
         this.IPAddress = IPAddress;
         this.Filename = Filename;
-        this.colour=colour;
-        this.Result=Result;
-        this.plp=plp;
-        this.windowSize=windowSize;
-      
+        this.colour = colour;
+        this.Result = Result;
+        this.plp = plp;
+        this.windowSize = windowSize;
+
         //this.serverSocket=serverSocket;
     }
 
     public void run() {
 
         try {
-            System.out.println("Welcome to go back n server!");
-            System.out.println("-------------------------------------");
-            System.out.println("Client port here:" + client_port);
+            ClientServerUtils.PRINT("Welcome to go back n server!",colour);
+            ClientServerUtils.PRINT("-------------------------------------",colour);
+            ClientServerUtils.PRINT("Client port here:" + client_port,colour);
             file_bytes = ClientServerUtils.loadFile(Filename, file_bytes, Dpacket_length, client_port, colour);
             packets_needed = (file_bytes.length / Dpacket_length) + 1;
-            System.out.println("User " + client_port + "  packets needed to send: " + Integer.toString(packets_needed));
+            ClientServerUtils.PRINT("User " + client_port + "  packets needed to send: " + Integer.toString(packets_needed),colour);
             byte initialize[] = new byte[8];
             ByteBuffer bx = ByteBuffer.allocate(4);
             bx.putInt(server_port);
             byte result1[] = new byte[4];
             result1 = bx.array();
-            System.out.println("User " + client_port + " server port:" + server_port);
+            ClientServerUtils.PRINT("User " + client_port + " server port:" + server_port,colour);
             ClientServerUtils.copyArray(result1, initialize, 0, 4);
             ByteBuffer b = ByteBuffer.allocate(4);
             b.putInt(packets_needed);
@@ -81,7 +81,7 @@ public class ServerGBN implements Runnable {
             } catch (IOException ex) {
                 Logger.getLogger(ServerSW.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("User " + client_port + " SEND FILE FINISHED");
+            ClientServerUtils.PRINT("User " + client_port + " SEND FILE FINISHED",colour);
             serverSocket.close();
 
         } catch (SocketException ex) {
@@ -89,10 +89,10 @@ public class ServerGBN implements Runnable {
         }
     }
 
-    public static void SendFile(DatagramSocket serverSocket) throws IOException {
+    public void SendFile(DatagramSocket serverSocket) throws IOException {
 
-        System.out.println("User " + client_port + " SEND FILE BEGIN");
-        System.out.println("----------------------------------------------------------------");
+        ClientServerUtils.PRINT("User " + client_port + " SEND FILE BEGIN",colour);
+        ClientServerUtils.PRINT("----------------------------------------------------------------",colour);
 
         Checksum ch = new CRC32();
         byte[] packet_to_send = null;
@@ -125,15 +125,16 @@ public class ServerGBN implements Runnable {
                 if (dropafter != Result) {
                     ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                 } else {
-                   // dropafter = (int) (1 / plp);
-                    System.out.println("Packet with sequence number: " + PCKT_NO + " is lost!");
+                    // dropafter = (int) (1 / plp);
+                    ClientServerUtils.PRINT("Packet with sequence number: " + PCKT_NO + " is lost!",colour);
                 }
                 dropafter++;
-                if(dropafter== (int) 1/plp)
-                    dropafter=0;
-                
-                System.out.println("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize));
-                System.out.println("Sent packet with sequence number : " + PCKT_NO);
+                if (dropafter == (int) 1 / plp) {
+                    dropafter = 0;
+                }
+
+                ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize),colour);
+                ClientServerUtils.PRINT("Sent packet with sequence number : " + PCKT_NO,colour);
 
                 System.out.println("----------------------------------------------------------------");
                 PCKT_NO++;
@@ -151,13 +152,13 @@ public class ServerGBN implements Runnable {
                     // else, resend all unacknowledged packets in the current window
                     if (ackReceived == 1) {
                         last_ack = ackSeq;
-                        System.out.println("Received Acknowledgment with sequence number: " + ackSeq);
+                       ClientServerUtils.PRINT("Received Acknowledgment with sequence number: " + ackSeq,colour);
 
                         // if ack sequence number > window base, shift window forward
                         if (ackSeq > windowBase) {
                             windowBase = ackSeq;
-                            System.out.println("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize));
-                            System.out.println("----------------------------------------------------------------");
+                            ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize),colour);
+                            ClientServerUtils.PRINT("----------------------------------------------------------------",colour);
                         }
                         break;
                     } else {
@@ -166,8 +167,8 @@ public class ServerGBN implements Runnable {
                             packet_to_send = ClientServerUtils.get_packet(j - 1, Dpacket_length, detail_length, file_bytes);
                             ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                             retransmissionCounter += 1;
-                            System.out.println("Packet " + j + " timeout!");
-                            System.out.println("Resending packet with sequence number: " + j);
+                            ClientServerUtils.PRINT("Packet " + j + " timeout!",colour);
+                            ClientServerUtils.PRINT("Resending packet with sequence number: " + j,colour);
                         }
                     }
 
@@ -179,7 +180,7 @@ public class ServerGBN implements Runnable {
         boolean isLastAckPacket = false;
         int resendCounter = 0;
         int y[] = new int[2];
-        System.out.println("->Finished sending all packets first time");
+        ClientServerUtils.PRINT("->Finished sending all packets first time",colour);
         while (!isLastAckPacket) {
 
             boolean ackReceived = false;
@@ -193,21 +194,21 @@ public class ServerGBN implements Runnable {
             // else, resend all unacknowledged packets in the current window
             if (y[0] == 1) {
                 last_ack = ackSequenceNum;
-                System.out.println("Received acknowledgment with sequence number: " + ackSequenceNum);
+                ClientServerUtils.PRINT("Received acknowledgment with sequence number: " + ackSequenceNum,colour);
 
                 // if ack sequence number > window base, shift window forward
                 if (ackSequenceNum > windowBase) {
                     windowBase = ackSequenceNum;
-                    System.out.println("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize));
-                    System.out.println("----------------------------------------------------------------");
+                    ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize),colour);
+                    ClientServerUtils.PRINT("----------------------------------------------------------------",colour);
                 }
 
                 // if ack sequence number == last packet's sequence number,
                 // set isLastAckPacket to true so that we can break from the while loop and close the socket
                 if (ackSequenceNum == packets_needed - 1) {
                     isLastAckPacket = true;
-                    System.out.println("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize));
-                    System.out.println("Received final acknowledgment, now shutting down.");
+                   ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize),colour);
+                    ClientServerUtils.PRINT("Received final acknowledgment, now shutting down.",colour);
 
                     System.out.println("----------------------------------------------------------------");
                 }
@@ -223,8 +224,8 @@ public class ServerGBN implements Runnable {
                     ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                     // System.out.println("Sent packet with sequence number : " + (j-1));
                     retransmissionCounter += 1;
-                    System.out.println("Packet " + j + " timeout!");
-                    System.out.println("Resending packet with sequence number: " + (j));
+                    ClientServerUtils.PRINT("Packet " + j + " timeout!",colour);
+                    ClientServerUtils.PRINT("Resending packet with sequence number: " + (j),colour);
                 }
 
             }
@@ -232,7 +233,7 @@ public class ServerGBN implements Runnable {
         serverSocket.close();
     }
 
-    public static int[] recieve_Ack(DatagramSocket serverSocket, int last_ack) throws SocketException, IOException {
+    public int[] recieve_Ack(DatagramSocket serverSocket, int last_ack) throws SocketException, IOException {
         //WAIT FOR ACK
         boolean flag = true;
         byte[] Ack = new byte[5];
@@ -243,7 +244,7 @@ public class ServerGBN implements Runnable {
             serverSocket.receive(receivePacket);
         } catch (SocketTimeoutException ex) {
             flag = false;
-            System.out.println("User " + client_port + "time out");
+            ClientServerUtils.PRINT("User " + client_port + "time out",colour);
         }
 
         int ack_seq = ClientServerUtils.server_get_seq_no(receivePacket.getData());

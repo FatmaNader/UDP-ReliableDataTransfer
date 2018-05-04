@@ -37,6 +37,7 @@ public class ClientRUN {
             info[i] = br.readLine();
             // System.out.println(info[i]);
         }
+        br.close();
         return info;
     }
 
@@ -50,7 +51,7 @@ public class ClientRUN {
       DatagramSocket socket = null;
        while (true)
        {
-        System.out.println("->Please enter Your name");
+        System.out.println("->Please enter your username");
         String username = s.nextLine();
         byte []y = username.trim().getBytes();
         ClientServerUtils.copyArray(y, uname, 0, y.length);
@@ -58,7 +59,7 @@ public class ClientRUN {
             uname[i] =(byte)p ;
         }
 
-        System.out.println("->Please enter Your ID");
+        System.out.println("->Please enter your password");
         String password = s.nextLine();
         byte []x = password.trim().getBytes();
         ClientServerUtils.copyArray(x, pass, 0, x.length);
@@ -79,6 +80,7 @@ public class ClientRUN {
 
         int MainServer = Integer.parseInt(info[1].trim());
         int clientPort = Integer.parseInt(info[2].trim());
+        System.out.println(clientPort);
         String filename = info[3].trim();
         int windowSize = Integer.parseInt(info[4].trim());
         if(f==0)
@@ -86,11 +88,13 @@ public class ClientRUN {
          socket=new DatagramSocket(clientPort);
         }
         f++;
+        
         DatagramPacket sendPacket = new DatagramPacket(client_info, client_info.length, IPAddress, MainServer);
        socket.send(sendPacket);
        
         DatagramPacket packet=new DatagramPacket(b, b.length);
         socket.receive(packet);
+        //socket.close();
         if(b[0]==1)
         {
         System.out.println("1) Stop and wait");
@@ -110,12 +114,12 @@ public class ClientRUN {
                 break;
             case 2:
                 //ServerRUN.mode=2;
-                ClientGBN client2 = new ClientGBN(IP, MainServer, clientPort, filename, windowSize);
+                ClientGBN client2 = new ClientGBN(IP, MainServer, clientPort, filename, windowSize,socket);
                 client2.run();
                 break;
             case 3:
                 //ServerRUN.mode=3;
-                ClientSelectiveRpt client3 = new ClientSelectiveRpt(IP, MainServer, clientPort, filename, windowSize);
+                ClientSelectiveRpt client3 = new ClientSelectiveRpt(IP, MainServer, clientPort, filename, windowSize,socket);
                 client3.run();
 
         }
@@ -123,7 +127,7 @@ public class ClientRUN {
 
     }
            else {
-            System.out.println("wrong pass or id");
+            ClientServerUtils.PRINT("Wrong username or password!",4);
 }
  
     }

@@ -1,0 +1,5 @@
+localhost
+9876
+51459
+HuffmanInput.txt
+6

@@ -123,7 +123,7 @@ public class ServerRUN {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
                 int i = (int)receiveData[0];
-                System.out.println("+++++++"+i);
+                System.out.println("+++++++"+ i );
                 byte []Fn = new  byte [120];
                 ClientServerUtils.copyArray1(receiveData, Fn, 1, receiveData.length-1);
                 
@@ -132,10 +132,6 @@ public class ServerRUN {
              
                 ClientServerUtils.PRINT("The server recieved request from client " + clientPort + " to get file: " + Filename, colour);
 
-                System.out.println("1) Stop and wait");
-                System.out.println("2) Go back N");
-                System.out.println("3) Selective repeat");
-                System.out.println("Please choose the mode to use: ");
                 Scanner scan = new Scanner(System.in);
 
 //                int i = scan.nextInt();

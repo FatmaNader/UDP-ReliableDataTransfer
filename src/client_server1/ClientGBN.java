@@ -47,13 +47,18 @@ public class ClientGBN {
 
             byte[] receiveData = new byte[512];
             byte[] init = new byte[8];
+            byte [] file_info =new byte [50];
             System.out.println("Welcome to selective repeat client!");
             System.out.println("-------------------------------------");
             
+           int num =3;
+            byte x = (byte) num;
+            file_info[0]= x;
+            ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
             //get file name from user
             //String FileName = inFromUser.readLine();
 
-            DatagramPacket sendPacket = new DatagramPacket(filename.getBytes(), filename.getBytes().length, IPAddress, MainServer);
+            DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, MainServer);
             clientSocket.send(sendPacket);
             DatagramPacket receivePacket = new DatagramPacket(init, init.length);
             clientSocket.receive(receivePacket);

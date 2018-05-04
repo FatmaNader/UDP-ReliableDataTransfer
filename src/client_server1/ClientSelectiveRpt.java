@@ -35,6 +35,7 @@ public class ClientSelectiveRpt {
         this.clientPort = clientPort;
         this.filename = filename;
         this.windowSize = windowSize;
+
         this.clientSocket = clientSocket;
 
     }
@@ -43,12 +44,12 @@ public class ClientSelectiveRpt {
         try {
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 
-            //clientSocket = new DatagramSocket(clientPort);
             //define Ip an Socket
             InetAddress IPAddress = InetAddress.getByName(IP);
 
             byte[] receiveData = new byte[512];
             byte[] init = new byte[8];
+
             byte[] file_info = new byte[50];
             System.out.println("Welcome to selective repeat client!");
             System.out.println("-------------------------------------");
@@ -61,6 +62,7 @@ public class ClientSelectiveRpt {
 
             DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, WellKnownServer);
             clientSocket.send(sendPacket);
+
             DatagramPacket receivePacket = new DatagramPacket(init,
                     init.length);
             clientSocket.receive(receivePacket);

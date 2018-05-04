@@ -39,8 +39,6 @@ public class ClientGBN {
     public static void run() {
         try {
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-
-            // clientSocket = new DatagramSocket(clientPort);
             //define Ip an Socket
             InetAddress IPAddress = InetAddress.getByName(IP);
 
@@ -55,6 +53,7 @@ public class ClientGBN {
             byte x = (byte) 2;
             file_info[0] = x;
             ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
+
             DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, MainServer);
             clientSocket.send(sendPacket);
             DatagramPacket receivePacket = new DatagramPacket(init, init.length);

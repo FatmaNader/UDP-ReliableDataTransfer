@@ -60,6 +60,7 @@ public class ClientRUN {
         System.out.println("->Please enter your password");
         String password = s.nextLine();
          System.out.println(maskNumber(password, "****"));
+
         byte []x = password.trim().getBytes();
         ClientServerUtils.copyArray(x, pass, 0, x.length);
         for (int i = username.length(); i < 50; i++) {
@@ -70,6 +71,7 @@ public class ClientRUN {
        
         
         client_info = ArrayUtils.addAll(uname, pass);
+
           
           System.out.println("->Files available at server to request");
                 File folder = new File("C:\\Users\\HP\\Documents\\NetBeansProjects\\UDP-ReliableDataTransfer-master\\files\\");
@@ -81,7 +83,7 @@ public class ClientRUN {
                         System.out.println("Directory " + listOfFiles[i].getName());
                     }
                 }
-                
+
         System.out.println("->Please enter filename containing your info: ");
         String fileInfo = s.nextLine();
         String[] info = new String[5];
@@ -143,7 +145,7 @@ public class ClientRUN {
  
     }
     }
-    
+
    public static String maskNumber(String password, String mask) {
  
       int index = 0;
@@ -162,6 +164,7 @@ public class ClientRUN {
       }
       return masked.toString();
    }
+
 }
 
 

@@ -2,6 +2,7 @@ package client_server1;
 
 import java.net.*;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -90,34 +91,41 @@ public class ServerRUN {
             byte[] uname = new byte[50];
             ClientServerUtils.copyArray(receiveInfo, uname, 0, 50);
             String name = new String(uname).trim();
+
             ClientServerUtils.PRINT("Username: " + name, colour);
             clientPort = receivePacket1.getPort();
             //System.out.println(clientPort);
+          
+
             byte[] pass = new byte[50];
             ClientServerUtils.copyArray1(receiveInfo, pass, 50, 50);
             String passw = new String(pass).trim();
             int id = Integer.parseInt(passw);
-            ClientServerUtils.PRINT("Password: " + ClientRUN.maskNumber(passw, "*"), colour);
+            ClientServerUtils.PRINT("Password: " + ClientRUN.maskNumber(passw, "***"), colour);
             //System.out.println("pppp:  "+clients.get(12));
             if (clients.get(id) == null) {
                 ClientServerUtils.PRINT("Password NOT VALID", colour);
+
                 byte[] b = new byte[1];
                 b[0] = 0;
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
             } else if (!clients.get(id).equals(name)) {
+
                 ClientServerUtils.PRINT("USERNAME AND PASSWORD DON'T MATCH", colour);
+
                 byte[] b = new byte[1];
                 b[0] = 0;
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
             } else {
+
                 ClientServerUtils.PRINT("Correct username and password", 2);
+
                 byte[] b = new byte[1];
                 b[0] = 1;
                 DatagramPacket sendack = new DatagramPacket(b, b.length, IP_Address, clientPort);
                 serverSocket.send(sendack);
-              
 
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
@@ -143,6 +151,7 @@ public class ServerRUN {
                 switch (i) {
                     case 1:
                        
+
                         //ServerRUN.mode=1;
                         ServerSW s_t = new ServerSW(clientPort, server_inc, Filename, IP_Address, colour, windowSize, plp, Result);
                         Thread thread = new Thread(s_t);

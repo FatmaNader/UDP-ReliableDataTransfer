@@ -133,7 +133,7 @@ public class ServerRUN {
                 Scanner scan = new Scanner(System.in);
 
 //                int i = scan.nextInt();
-int i =2;
+int i =1;
                 switch (i) {
                     case 1:
                         //ServerRUN.mode=1;

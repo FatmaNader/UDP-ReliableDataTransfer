@@ -18,32 +18,32 @@ import java.util.zip.Checksum;
 
 public class ServerGBN implements Runnable {
 
-    public static int client_port;
-    public static int server_port;
-    public static InetAddress IPAddress;
-    public static String Filename;
-    public static int packets_needed;
-    public static int Dpacket_length = 500;
-    public static byte[] file_bytes;    // file of interest converted to bytes
-    public static int detail_length = 14;
-    public static double plp ;
-    public static double plc = 0;   //the length of data in every packet
-    public static int windowSize;
-    public static int dropafter = 0;
-    public static int retransmissionCounter = 0;
+    public int client_port;
+    public int server_port;
+    public InetAddress IPAddress;
+    public String Filename;
+    public int packets_needed;
+    public int Dpacket_length = 500;
+    public byte[] file_bytes;    // file of interest converted to bytes
+    public int detail_length = 14;
+    public double plp;
+    public double plc = 0;   //the length of data in every packet
+    public int windowSize;
+    public int dropafter = 0;
+    public int retransmissionCounter = 0;
     int colour;
-    public static int Result;
+    public int Result;
 
     public ServerGBN(int client_port, int Server_port, String Filename, InetAddress IPAddress, int colour, int windowSize, double plp, int Result) {
         this.server_port = Server_port;
         this.client_port = client_port;
         this.IPAddress = IPAddress;
         this.Filename = Filename;
-        this.colour=colour;
-        this.Result=Result;
-        this.plp=plp;
-        this.windowSize=windowSize;
-      
+        this.colour = colour;
+        this.Result = Result;
+        this.plp = plp;
+        this.windowSize = windowSize;
+
         //this.serverSocket=serverSocket;
     }
 
@@ -89,7 +89,7 @@ public class ServerGBN implements Runnable {
         }
     }
 
-    public static void SendFile(DatagramSocket serverSocket) throws IOException {
+    public void SendFile(DatagramSocket serverSocket) throws IOException {
 
         System.out.println("User " + client_port + " SEND FILE BEGIN");
         System.out.println("----------------------------------------------------------------");
@@ -125,13 +125,14 @@ public class ServerGBN implements Runnable {
                 if (dropafter != Result) {
                     ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                 } else {
-                   // dropafter = (int) (1 / plp);
+                    // dropafter = (int) (1 / plp);
                     System.out.println("Packet with sequence number: " + PCKT_NO + " is lost!");
                 }
                 dropafter++;
-                if(dropafter== (int) 1/plp)
-                    dropafter=0;
-                
+                if (dropafter == (int) 1 / plp) {
+                    dropafter = 0;
+                }
+
                 System.out.println("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize));
                 System.out.println("Sent packet with sequence number : " + PCKT_NO);
 
@@ -232,7 +233,7 @@ public class ServerGBN implements Runnable {
         serverSocket.close();
     }
 
-    public static int[] recieve_Ack(DatagramSocket serverSocket, int last_ack) throws SocketException, IOException {
+    public int[] recieve_Ack(DatagramSocket serverSocket, int last_ack) throws SocketException, IOException {
         //WAIT FOR ACK
         boolean flag = true;
         byte[] Ack = new byte[5];

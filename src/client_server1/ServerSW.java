@@ -12,31 +12,31 @@ import java.util.zip.Checksum;
 
 public class ServerSW implements Runnable {
 
-    private static int client_port;
-    private static int server_port;
-    private static InetAddress IPAddress;
-    private static String Filename;
-    private static int packets_needed;
-    private static int Dpacket_length = 500;                //the length of data in every packet
-    private static byte[] file_bytes;    // file of interest converted to bytes
-    private static int detail_length = 14;
-    private static double plp ;
-    private static double plc = 0;
-    private static int dropafter =0;
-    private static int corruptionafter = (int) (1 / plc);
+    private int client_port;
+    private int server_port;
+    private InetAddress IPAddress;
+    private String Filename;
+    private int packets_needed;
+    private int Dpacket_length = 500;                //the length of data in every packet
+    private byte[] file_bytes;    // file of interest converted to bytes
+    private int detail_length = 14;
+    private double plp;
+    private double plc = 0;
+    private int dropafter = 0;
+    private int corruptionafter = (int) (1 / plc);
     //  public static DatagramSocket serverSocket;
     int colour;
-    public static int Result;
+    public int Result;
 
-    public ServerSW(int client_port, int Server_port, String Filename, InetAddress IPAddress, int colour,int windowSize, double plp, int Result) {
+    public ServerSW(int client_port, int Server_port, String Filename, InetAddress IPAddress, int colour, int windowSize, double plp, int Result) {
         this.server_port = Server_port;
         this.client_port = client_port;
         this.IPAddress = IPAddress;
         this.Filename = Filename;
-        this.colour=colour;
-        this.plp=plp;
-        this.Result=Result;
-        
+        this.colour = colour;
+        this.plp = plp;
+        this.Result = Result;
+
         //this.serverSocket=serverSocket;
     }
 
@@ -83,7 +83,7 @@ public class ServerSW implements Runnable {
 
     }
 
-    public static void SendFile(DatagramSocket serverSocket) throws IOException {
+    public void SendFile(DatagramSocket serverSocket) throws IOException {
 
         System.out.println("User " + client_port + " SEND FILE BEGIN");
 
@@ -157,11 +157,13 @@ public class ServerSW implements Runnable {
                 ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                 System.out.println("Sent packet with sequence number: " + (i % 2));
             } else {
-               // dropafter = (int) (1 / plp);
+                // dropafter = (int) (1 / plp);
                 System.out.println("Packet with sequence number: " + i + " is lost!");
             }
             dropafter++;
-            if(dropafter== (int)(1/plp))dropafter=0;
+            if (dropafter == (int) (1 / plp)) {
+                dropafter = 0;
+            }
             count = count + Dpacket_length;
             //System.out.println("Sent packet with sequence number : " + i);
             //WAIT FOR ACK
@@ -190,7 +192,7 @@ public class ServerSW implements Runnable {
         }
     }
 
-    public static boolean recieve_Ack(DatagramSocket serverSocket, int seq) throws SocketException, IOException {
+    public boolean recieve_Ack(DatagramSocket serverSocket, int seq) throws SocketException, IOException {
         //WAIT FOR ACK
         boolean flag = true;
         byte[] Ack = new byte[5];

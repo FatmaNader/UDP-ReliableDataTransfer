@@ -47,49 +47,7 @@ public class ServerSelectiveRpt implements Runnable {
         //this.serverSocket=serverSocket;
     }
 
-    public class packet {
-
-        public int seq_no;
-        public long time;
-        public boolean isAck;
-        public byte[] packet;
-
-        public packet(int seq_no, long time, byte[] packet) {
-            this.seq_no = seq_no;
-            this.isAck = false;
-            this.time = time;
-            this.packet = packet;
-
-        }
-
-        public packet() {
-
-        }
-
-        public int getSeq_no() {
-            return seq_no;
-        }
-
-        public void setSeq_no(int seq_no) {
-            this.seq_no = seq_no;
-        }
-
    
-
-        public void setTime(int time) {
-            this.time = time;
-        }
-
-        public boolean isIsAck() {
-            return isAck;
-        }
-
-        public void setIsAck(boolean isAck) {
-            this.isAck = isAck;
-        }
-
-    }
-
     public void run() {
 
         try {
@@ -150,7 +108,7 @@ public class ServerSelectiveRpt implements Runnable {
             if (PCKT_NO > windowBase && PCKT_NO <= windowBase + windowSize) {   // if pipeline is not full
 
                 packet_to_send = get_packet(PCKT_NO);
-                packet p = new packet(PCKT_NO, System.currentTimeMillis(), packet_to_send);
+                packet p = new packet(PCKT_NO,  packet_to_send);
                 allPackets.add(p);
                 Timer1 pkt_timer = new Timer1(PCKT_NO);
                 TimerTask1 pkt_action = new TimerTask1(PCKT_NO) {

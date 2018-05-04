@@ -141,12 +141,13 @@ public class ServerRUN {
                 Filename = Filename.trim();
 
                 ClientServerUtils.PRINT("The server recieved request from client " + clientPort + " to get file: " + Filename, colour);
-                
+                long start = System.currentTimeMillis();
                 switch (i) {
                     case 1:
                        
 
                         //ServerRUN.mode=1;
+                        
                         ServerSW s_t = new ServerSW(clientPort, server_inc, Filename, IP_Address, colour, windowSize, plp, Result);
                         Thread thread = new Thread(s_t);
                         if (thread.getState() != Thread.State.NEW) {
@@ -154,6 +155,7 @@ public class ServerRUN {
                         }
                         thread.setName((Integer.toString(server_inc)));
                         thread.start();
+                        
                         break;
 
                     case 2:

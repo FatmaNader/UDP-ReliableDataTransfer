@@ -77,8 +77,12 @@ public class ClientGBN {
                 System.out.println("The packets needed to get file is:" + packets_needed);
 
             }
+           long start= System.currentTimeMillis();
             get_file(clientSocket);
-
+            long end= System.currentTimeMillis();
+            long total=end-start;
+            long throughput=total/packets_needed;
+           System.out.println("Finished in: " + (long) ((total )) + " sec and each packet took: " + throughput + " msec");
             System.out.println("The file is received successfully");
             System.out.print("->Please enter file name to save: ");
             String NFileName = inFromUser.readLine();

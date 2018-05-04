@@ -57,7 +57,7 @@ public class ClientSelectiveRpt {
             byte x = (byte) 3;
             file_info[0] = x;
             ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
-            
+
             //get file name from user
             DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, WellKnownServer);
             clientSocket.send(sendPacket);
@@ -111,8 +111,13 @@ public class ClientSelectiveRpt {
 //
 //                }
 //            }
-          
+
+            long start = System.currentTimeMillis();
             get_file(clientSocket);
+            long end = System.currentTimeMillis();
+            long total = end - start;
+            long throughput = total / packets_needed;
+            System.out.println("Finished in: " + (long) (total ) + " sec and each packet took: " + throughput + " msec");
 
             System.out.println("The file is received successfully");
             System.out.print("->Please enter file name to save: ");
@@ -190,14 +195,14 @@ public class ClientSelectiveRpt {
 
         long expected_checkSum = ClientServerUtils.get_checkSum(bytes_rec);
         int seq_no = ClientServerUtils.get_seq_no(bytes_rec, detail_length);
-            
+
         int len = ClientServerUtils.get_dataLength(bytes_rec);
         data_rec = Arrays.copyOfRange(bytes_rec, detail_length, len + detail_length);
         InetAddress IPAddress = InetAddress.getByName(IP);
         ch.update(data_rec, 0, data_rec.length);
         long current_checksum = ch.getValue();
 
-    ///Here we recieve packet if it is in the window
+        ///Here we recieve packet if it is in the window
         if (seq_no > WindowBase && seq_no < WindowBase + windowSize && current_checksum == expected_checkSum) {
 
             Packets.get(seq_no).isRecieved = true;
@@ -222,7 +227,7 @@ public class ClientSelectiveRpt {
             //if packets are corrupted
         } else if (current_checksum != expected_checkSum) {
             System.err.println("Packet corrupted!");
-            System.out.println("Received packet with sequence number " + seq_no + " length " + len + " expected checksum " + expected_checkSum  + " and current checksum: " + current_checksum);
+            System.out.println("Received packet with sequence number " + seq_no + " length " + len + " expected checksum " + expected_checkSum + " and current checksum: " + current_checksum);
         }
 
         return WindowBase;

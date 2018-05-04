@@ -73,16 +73,16 @@ public class ClientRUN {
         client_info = ArrayUtils.addAll(uname, pass);
 
           
-          System.out.println("->Files available at server to request");
-                File folder = new File("D:\\Projects\\UDP-ReliableDataTransfer\\files");
-                File[] listOfFiles = folder.listFiles();
-                for (int i = 0; i < listOfFiles.length; i++) {
-                    if (listOfFiles[i].isFile()) {
-                        System.out.println("File: " + listOfFiles[i].getName());
-                    } else if (listOfFiles[i].isDirectory()) {
-                        System.out.println("Directory " + listOfFiles[i].getName());
-                    }
-                }
+//          System.out.println("->Files available at server to request");
+//                File folder = new File("D:\\Projects\\UDP-ReliableDataTransfer\\files");
+//                File[] listOfFiles = folder.listFiles();
+//                for (int i = 0; i < listOfFiles.length; i++) {
+//                    if (listOfFiles[i].isFile()) {
+//                        System.out.println("File: " + listOfFiles[i].getName());
+//                    } else if (listOfFiles[i].isDirectory()) {
+//                        System.out.println("Directory " + listOfFiles[i].getName());
+//                    }
+//                }
                 
                 
                 //Read the fileee that contain the details

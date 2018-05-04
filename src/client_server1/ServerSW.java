@@ -78,6 +78,7 @@ public class ServerSW implements Runnable {
             }
             ClientServerUtils.PRINT("User " + client_port + " SEND FILE FINISHED",colour);
             serverSocket.close();
+            
 
         } catch (SocketException ex) {
             Logger.getLogger(ServerSW.class.getName()).log(Level.SEVERE, null, ex);
@@ -188,7 +189,7 @@ public class ServerSW implements Runnable {
         boolean flag = true;
         byte[] Ack = new byte[5];
 
-        serverSocket.setSoTimeout(100);
+        serverSocket.setSoTimeout(200);
 
         DatagramPacket receivePacket = new DatagramPacket(Ack, Ack.length);
         try {

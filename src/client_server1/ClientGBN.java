@@ -114,9 +114,10 @@ public class ClientGBN {
                     System.out.println("Packet is CORRUPTED !");
                 }
                 if (seq_no != SequenceNum) {
-                    System.out.println("Packet is with wrong sequence number!");
+                    //System.out.println("Packet is with wrong sequence number!");
+                     System.out.println(" Expected sequence number: " + SequenceNum + " but recieved seq no is" + seq_no);
                 }
-                System.out.println(" Expected sequence number: " + SequenceNum + " but recieved seq no is" + seq_no);
+               
                 // if there is error SEND ACK with previous sequence no
                 ClientServerUtils.sendAck(clientSocket, SequenceNum - 1, IP, NClientSocket);
                 x = recieve_packet(clientSocket, SequenceNum);

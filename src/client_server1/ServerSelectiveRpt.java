@@ -117,23 +117,17 @@ public class ServerSelectiveRpt implements Runnable {
 
                         if (!allPackets.get(timerseq).isAck) {
 
-                            try {
-                                ClientServerUtils.PRINT("User " + client_port + " Packet " + timerseq + " timeout!", colour);
-                                ClientServerUtils.Send_Data(serverSocket, allPackets.get(timerseq).packet, IPAddress, client_port);
-                                ClientServerUtils.PRINT("User " + client_port + " Resending packet with sequence number: " + timerseq, colour);
-                                // this.x=false;
-                                run();
-                            } catch (IOException ex) {
-                                System.err.println("ERROR!");
-                                Logger.getLogger(ServerSelectiveRpt.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                            ClientServerUtils.PRINT("User " + client_port + " Packet " + timerseq + " timeout!", colour);
+                            ClientServerUtils.Send_Data(serverSocket, allPackets.get(timerseq).packet, IPAddress, client_port);
+                            ClientServerUtils.PRINT("User " + client_port + " Resending packet with sequence number: " + timerseq, colour);
+                           // run();
                         }
                         else 
                             this.cancel();
                     }
 
                 };
-                pkt_timer.schedule(pkt_action, 200);
+                pkt_timer.schedule(pkt_action, 50);
 
                 //corrupt the packet
                 if (corruptionafter == 0) {

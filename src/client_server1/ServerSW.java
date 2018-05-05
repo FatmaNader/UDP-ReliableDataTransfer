@@ -149,6 +149,7 @@ public class ServerSW implements Runnable {
             
             //SEND DATA
             if (dropafter != Result) {
+               // if(i!=5)
                 ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
                 ClientServerUtils.PRINT("Sent packet with sequence number: " + (i % 2),colour);
             } else {
@@ -189,7 +190,7 @@ public class ServerSW implements Runnable {
         boolean flag = true;
         byte[] Ack = new byte[5];
 
-        serverSocket.setSoTimeout(200);
+        serverSocket.setSoTimeout(50);
 
         DatagramPacket receivePacket = new DatagramPacket(Ack, Ack.length);
         try {

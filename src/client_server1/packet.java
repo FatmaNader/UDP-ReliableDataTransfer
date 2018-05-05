@@ -18,7 +18,13 @@ package client_server1;
             this.packet = packet;
 
         }
-
+        
+    public packet(int seq_no,long time ,byte[] packet) {
+            this.seq_no = seq_no;
+            this.isAck = false;
+            this.packet = packet;
+            this.time=time;
+        }
         public packet() {
 
         }
@@ -35,6 +41,10 @@ package client_server1;
         public boolean isIsAck() {
             return isAck;
         }
+
+    public long getTime() {
+        return time;
+    }
 
         public void setIsAck(boolean isAck) {
             this.isAck = isAck;

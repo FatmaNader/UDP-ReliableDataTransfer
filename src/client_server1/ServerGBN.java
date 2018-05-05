@@ -48,7 +48,7 @@ public class ServerGBN implements Runnable {
 
         try {
             ClientServerUtils.PRINT("Welcome to go back n server!", colour);
-            //System.out.println(Result);
+            System.out.println(Result);
             ClientServerUtils.PRINT("-------------------------------------", colour);
             ClientServerUtils.PRINT("Client port here:" + client_port, colour);
             file_bytes = ClientServerUtils.loadFile(Filename, file_bytes, Dpacket_length, client_port, colour);
@@ -67,7 +67,7 @@ public class ServerGBN implements Runnable {
             result = b.array();
             ClientServerUtils.copyArray(result, initialize, 4, 4);
             DatagramSocket serverSocket = new DatagramSocket(server_port);
-            serverSocket.setSoTimeout(200);
+            serverSocket.setSoTimeout(50);
 
             DatagramPacket sendPacket = new DatagramPacket(initialize, initialize.length, IPAddress, client_port);
             try {
@@ -118,27 +118,27 @@ public class ServerGBN implements Runnable {
                 }
 
                 corruptionafter--;
-
-                 if (dropafter != Result) {
-               
+                System.out.println(dropafter);
+                if (dropafter != Result) {
+                    //if(sequenceNum!=5)
                     ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
-                System.out.println( " Sent packet with sequence number: " + sequenceNum);
-                sequenceNum++;
-               } else {
-                 dropafter = (int) (1 / plp);
-                ClientServerUtils.PRINT("Packet with sequence number: " + sequenceNum + " is lost!", colour);
-                
+                    System.out.println(" Sent packet with sequence number: " + sequenceNum);
+
+                } else {
+
+                    ClientServerUtils.PRINT("Packet with sequence number: " + sequenceNum + " is lost!", colour + 1);
+
                 }
                 dropafter++;
-                 if (dropafter == (int) 1 / plp) {
-                   dropafter = 0;
+                if (dropafter == (int) (1 / plp)) {
+                    dropafter = 0;
                 }
 
                 ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
-                ClientServerUtils.PRINT("Sent packet with sequence number : " + sequenceNum, colour);
+                // ClientServerUtils.PRINT("Sent packet with sequence number : " + sequenceNum, colour);
 
                 System.out.println("----------------------------------------------------------------");
-
+                sequenceNum++;
                 count = count + Dpacket_length;
             } else {  // if pipeline is full
                 while (true) {
@@ -157,7 +157,7 @@ public class ServerGBN implements Runnable {
                         ClientServerUtils.PRINT("User " + client_port + " timed out while waiting for acknowledgment", colour);
                     }
 
-                   // x = recieve_Ack(serverSocket, last_ack);
+                    // x = recieve_Ack(serverSocket, last_ack);
 //                    ackReceived = x[0];
 //                    int ackSeq = x[1];
                     // whenever ack is received, break to send next packet
@@ -168,6 +168,7 @@ public class ServerGBN implements Runnable {
 
                         // if ack sequence number > window base, shift window forward
                         if (ackSequenceNum > windowBase) {
+                            serverSocket.setSoTimeout(50);
                             windowBase = ackSequenceNum;
                             ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
                             ClientServerUtils.PRINT("----------------------------------------------------------------", colour);
@@ -215,7 +216,9 @@ public class ServerGBN implements Runnable {
 
                 // if ack sequence number > window base, shift window forward
                 if (ack_seq > windowBase) {
+                    serverSocket.setSoTimeout(50);
                     windowBase = ack_seq;
+
                     ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
                     ClientServerUtils.PRINT("----------------------------------------------------------------", colour);
                 }

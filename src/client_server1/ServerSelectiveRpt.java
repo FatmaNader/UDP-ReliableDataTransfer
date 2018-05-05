@@ -156,6 +156,7 @@ public class ServerSelectiveRpt implements Runnable {
                 dropafter++;
                 if (dropafter == (int) (1 / plp)) {
                     dropafter = 0;
+                       Result=ClientServerUtils.RandomTest(0, plp);
                 }
                
                 //begin counting for the next corruption

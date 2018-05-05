@@ -40,20 +40,7 @@ public class ServerRUN {
         return info;
     }
 
-    public static int RandomTest(int RandomSeed, double plp) {
-        // create random object
-        Random randomno = new Random();
-        int Low = 0;
-        int High = (int) (1 / plp);
 
-        // setting seed
-        randomno.setSeed(RandomSeed);
-        int Result = randomno.nextInt(High - Low) + Low;
-
-        // value after setting seed
-       // System.out.println("***********************Object after seed: " + Result);
-        return Result;
-    }
 
     public static void run() throws SocketException, IOException {
         init_clients();
@@ -68,7 +55,7 @@ public class ServerRUN {
         double plp = Double.parseDouble(info[3].trim());
         
         //Calculate the  Random packet lost 
-        int Result = RandomTest(RandomSeed, plp);
+          int Result=ClientServerUtils.RandomTest(0, plp);
         int server_inc = 9877;
         DatagramSocket serverSocket;
         int colour = -1;

@@ -132,6 +132,7 @@ public class ServerGBN implements Runnable {
                 dropafter++;
                 if (dropafter == (int) (1 / plp)) {
                     dropafter = 0;
+                    Result = ClientServerUtils.RandomTest(0, plp);
                 }
 
                 ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
@@ -177,9 +178,23 @@ public class ServerGBN implements Runnable {
                     } else {
                         for (int j = windowBase + 1; j < sequenceNum; j++) {
                             packet_to_send = ClientServerUtils.get_packet(j, Dpacket_length, detail_length, file_bytes);
-                            ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
-                            //ClientServerUtils.PRINT("Packet " + j + " timeout!", colour);
-                            ClientServerUtils.PRINT("Resending packet with sequence number: " + j, colour);
+                            if (dropafter != Result) {
+                                //if(sequenceNum!=5)
+                                ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
+                                //ClientServerUtils.PRINT("Packet " + j + " timeout!", colour);
+                                ClientServerUtils.PRINT("Resending packet with sequence number: " + j, colour);
+
+                            } else {
+
+                                ClientServerUtils.PRINT("Packet with sequence number: " + sequenceNum + " is lost!", colour + 1);
+
+                            }
+                            dropafter++;
+                            if (dropafter == (int) (1 / plp)) {
+                                dropafter = 0;
+                                Result = ClientServerUtils.RandomTest(0, plp);
+                            }
+
                         }
                     }
 
@@ -241,11 +256,22 @@ public class ServerGBN implements Runnable {
                 for (int j = windowBase + 1; j < sequenceNum; j++) {
 
                     packet_to_send = ClientServerUtils.get_packet(j, Dpacket_length, detail_length, file_bytes);
-                    ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
-                    // System.out.println("Sent packet with sequence number : " + (j-1));
-                    retransmissionCounter += 1;
-                    //ClientServerUtils.PRINT("Packet " + j + " timeout!", colour);
-                    ClientServerUtils.PRINT("Resending packet with sequence number: " + (j), colour);
+                    if (dropafter != Result) {
+                        //if(sequenceNum!=5)
+                        ClientServerUtils.Send_Data(serverSocket, packet_to_send, IPAddress, client_port);
+                        //ClientServerUtils.PRINT("Packet " + j + " timeout!", colour);
+                        ClientServerUtils.PRINT("Resending packet with sequence number: " + j, colour);
+
+                    } else {
+
+                        ClientServerUtils.PRINT("Packet with sequence number: " + sequenceNum + " is lost!", colour + 1);
+
+                    }
+                    dropafter++;
+                    if (dropafter == (int) (1 / plp)) {
+                        dropafter = 0;
+                        Result = ClientServerUtils.RandomTest(0, plp);
+                    }
                 }
 
             }

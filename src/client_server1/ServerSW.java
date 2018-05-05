@@ -159,6 +159,7 @@ public class ServerSW implements Runnable {
             dropafter++;
             if (dropafter == (int) (1 / plp)) {
                 dropafter = 0;
+                   Result=ClientServerUtils.RandomTest(0, plp);
             }
             count = count + Dpacket_length;
  

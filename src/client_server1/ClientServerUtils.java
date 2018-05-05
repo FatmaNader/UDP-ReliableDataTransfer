@@ -18,26 +18,25 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
 public class ClientServerUtils {
-    
+
     public static final String ANSI_PURPLE = "\u001B[35m";  //0
     public static final String ANSI_BLUE = "\u001B[34m";    //1
     public static final String ANSI_GREEN = "\u001B[32m";   //2
     public static final String ANSI_YELLOW = "\u001B[33m";  //3
-     public static final String ANSI_RED = "\u001B[31m";    //4
+    public static final String ANSI_RED = "\u001B[31m";    //4
     public static final String ANSI_CYAN = "\u001B[36m";    //5
     public static final String ANSI_BLACK = "\u001B[30m";
 
     private static final Object syncObj = new Object();
-public static String[] convertToStrings(byte[][] byteStrings) {
-    String[] data = new String[byteStrings.length];
-    for (int i = 0; i < byteStrings.length; i++) {
-        data[i] = new String(byteStrings[i], Charset.defaultCharset());
 
+    public static String[] convertToStrings(byte[][] byteStrings) {
+        String[] data = new String[byteStrings.length];
+        for (int i = 0; i < byteStrings.length; i++) {
+            data[i] = new String(byteStrings[i], Charset.defaultCharset());
+
+        }
+        return data;
     }
-    return data;
-}
-
-
 
     public static byte[] loadFile(String filename, byte[] file_bytes, int Dpacket_length, int client_port, int colour) {
 
@@ -151,7 +150,7 @@ public static String[] convertToStrings(byte[][] byteStrings) {
 
             switch (color) {
                 case 0:
-                     System.out.println(ANSI_PURPLE + message + ANSI_PURPLE);
+                    System.out.println(ANSI_PURPLE + message + ANSI_PURPLE);
 
                     break;
                 case 1:
@@ -161,11 +160,11 @@ public static String[] convertToStrings(byte[][] byteStrings) {
                     System.out.println(ANSI_GREEN + message + ANSI_GREEN);
                     break;
                 case 3:
-                   System.out.println(ANSI_YELLOW + message + ANSI_YELLOW);
+                    System.out.println(ANSI_YELLOW + message + ANSI_YELLOW);
                     break;
                 case 4:
                     System.out.println(ANSI_RED + message + ANSI_RED);
-                    
+
                     break;
                 case 5:
                     System.out.println(ANSI_CYAN + message + ANSI_CYAN);
@@ -199,13 +198,14 @@ public static String[] convertToStrings(byte[][] byteStrings) {
 
         }
     }
-    
-  public static void copyArray1(byte src[], byte dest[], int offset, int length) {
+
+    public static void copyArray1(byte src[], byte dest[], int offset, int length) {
         for (int i = 0; i < length; i++) {
-            dest[i] = src[i+offset];
+            dest[i] = src[i + offset];
 
         }
     }
+
     public static void sendAck(DatagramSocket clientSocket, int expected_seqNo, String IP, int NClientSocket) throws UnknownHostException, IOException {
 
         InetAddress IPAddress = InetAddress.getByName(IP);
@@ -222,7 +222,22 @@ public static String[] convertToStrings(byte[][] byteStrings) {
 
         DatagramPacket sendPacket = new DatagramPacket(Ack, Ack.length, IPAddress, NClientSocket);
         clientSocket.send(sendPacket);
-        
+
+    }
+
+    public static int RandomTest(int RandomSeed, double plp) {
+        // create random object
+        Random randomno = new Random();
+        int Low = 0;
+        int High = (int) (1 / plp);
+
+        // setting seed
+        //randomno.setSeed();
+        int Result = randomno.nextInt(High - Low ) + Low;
+
+        // value after setting seed
+        // System.out.println("***********************Object after seed: " + Result);
+        return Result;
     }
 
 }

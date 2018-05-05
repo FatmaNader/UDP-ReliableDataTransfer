@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
@@ -110,9 +112,13 @@ public static String[] convertToStrings(byte[][] byteStrings) {
         return packet_to_send;
     }
 
-    public static void Send_Data(DatagramSocket serverSocket, byte[] packet_to_send, InetAddress IPAddress, int client_port) throws IOException {
+    public static void Send_Data(DatagramSocket serverSocket, byte[] packet_to_send, InetAddress IPAddress, int client_port) {
         DatagramPacket sendPacket1 = new DatagramPacket(packet_to_send, packet_to_send.length, IPAddress, client_port);
-        serverSocket.send(sendPacket1);
+        try {
+            serverSocket.send(sendPacket1);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientServerUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static long get_checkSum(byte[] bytes_rec) {

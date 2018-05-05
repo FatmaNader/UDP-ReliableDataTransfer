@@ -50,8 +50,8 @@ public class ClientGBN {
 
             //get file name from user
             //String FileName = inFromUser.readLine();
-            byte x = (byte) 2;
-            file_info[0] = x;
+           // byte x = (byte) 2;
+            file_info[0] = (byte)2;
             ClientServerUtils.copyArray(filename.getBytes(), file_info, 1, filename.getBytes().length);
 
             DatagramPacket sendPacket = new DatagramPacket(file_info, file_info.length, IPAddress, MainServer);
@@ -82,7 +82,7 @@ public class ClientGBN {
             long end= System.currentTimeMillis();
             long total=end-start;
             long throughput=total/packets_needed;
-           System.out.println("Finished in: " + (long) ((total )) + " sec and each packet took: " + throughput + " msec");
+           System.out.println("Finished in: " + (long) ((total )) + " msec and each packet took: " + throughput + " msec");
             System.out.println("The file is received successfully");
             System.out.print("->Please enter file name to save: ");
             String NFileName = inFromUser.readLine();
@@ -125,7 +125,7 @@ public class ClientGBN {
                 curr_sheckSum = x[2];
             }
             //IF THERE IS NO ERROR SEND POSITIVE ACKNOWLEDGEMENT
-            byte type = 1;
+         
             ClientServerUtils.sendAck(clientSocket, SequenceNum, IP, NClientSocket);
             SequenceNum++;
         }

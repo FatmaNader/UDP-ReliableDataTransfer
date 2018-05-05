@@ -51,7 +51,7 @@ public class ServerRUN {
         int Result = randomno.nextInt(High - Low) + Low;
 
         // value after setting seed
-        //System.out.println("Object after seed: " + Result);
+       // System.out.println("***********************Object after seed: " + Result);
         return Result;
     }
 

@@ -72,7 +72,11 @@ public class ServerSW implements Runnable {
                 Logger.getLogger(ServerSW.class.getName()).log(Level.SEVERE, null, ex);
             }
             try {
+                  long Start_time =System.currentTimeMillis();
                 SendFile(serverSocket);
+                long end_time = System.currentTimeMillis();
+               long througput = (file_bytes.length / ((end_time-Start_time)/100));
+                System.out.println("THE throuput is "+througput + " bits/sec and the time taken is "+(end_time-Start_time));
             } catch (IOException ex) {
                 Logger.getLogger(ServerSW.class.getName()).log(Level.SEVERE, null, ex);
             }

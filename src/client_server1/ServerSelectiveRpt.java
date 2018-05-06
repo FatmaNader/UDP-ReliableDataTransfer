@@ -76,7 +76,11 @@ public class ServerSelectiveRpt implements Runnable {
             } catch (IOException ex) {
                 Logger.getLogger(ServerSW.class.getName()).log(Level.SEVERE, null, ex);
             }
-            SendFile(serverSocket);
+                 long Start_time =System.currentTimeMillis();
+                SendFile(serverSocket);
+                long end_time = System.currentTimeMillis();
+               long througput = (file_bytes.length / ((end_time-Start_time)/100));
+                System.out.println("THE throuput is "+througput + " bits/sec and the time taken is "+(end_time-Start_time));
             ClientServerUtils.PRINT("User " + client_port + " SEND FILE FINISHED", colour);
             serverSocket.close();
 

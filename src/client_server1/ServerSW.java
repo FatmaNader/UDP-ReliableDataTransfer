@@ -191,7 +191,7 @@ public class ServerSW implements Runnable {
         boolean flag = true;
         byte[] Ack = new byte[5];
 
-        serverSocket.setSoTimeout(50);
+        serverSocket.setSoTimeout(200);
 
         DatagramPacket receivePacket = new DatagramPacket(Ack, Ack.length);
         try {

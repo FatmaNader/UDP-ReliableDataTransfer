@@ -8,6 +8,8 @@ package client_server1;
 import java.net.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
@@ -30,6 +32,7 @@ public class ServerGBN implements Runnable {
     public int retransmissionCounter = 0;
     int colour;
     public int Result;
+    public int t = 0;
 
     public ServerGBN(int client_port, int Server_port, String Filename, InetAddress IPAddress, int colour, int windowSize, double plp, int Result) throws SocketException {
         this.server_port = Server_port;
@@ -67,7 +70,7 @@ public class ServerGBN implements Runnable {
             result = b.array();
             ClientServerUtils.copyArray(result, initialize, 4, 4);
             DatagramSocket serverSocket = new DatagramSocket(server_port);
-            serverSocket.setSoTimeout(50);
+            //serverSocket.setSoTimeout(50);
 
             DatagramPacket sendPacket = new DatagramPacket(initialize, initialize.length, IPAddress, client_port);
             try {
@@ -101,8 +104,19 @@ public class ServerGBN implements Runnable {
         int windowBase = -1;
         long checksum = 0;
         int corruptionafter = (int) (1 / plc);
+        TimerTask task = new TimerTask() {
 
+            @Override
+            public void run() {
+                //System.out.println("*****IN THREAD TIMEEERRR: " + t);
+                t++;
+
+            }
+        };
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(task, 10, 10);
         while (sequenceNum < packets_needed) {
+
             packet_to_send = ClientServerUtils.get_packet(sequenceNum, Dpacket_length, detail_length, file_bytes);
 
             if (sequenceNum > windowBase && sequenceNum <= windowBase + windowSize) {   // if pipeline is not full
@@ -150,10 +164,15 @@ public class ServerGBN implements Runnable {
                     DatagramPacket receivePacket = new DatagramPacket(Ack, Ack.length);
                     int ackSequenceNum = 0;
                     try {
+                        //System.out.println("TIMEEERRR BEFORE: " + t);
+                        serverSocket.setSoTimeout(200 - (t * 10));
+                        //System.out.println("TIMEEERRR AFTER: " + t);
                         serverSocket.receive(receivePacket);
                         ackSequenceNum = ClientServerUtils.server_get_seq_no(receivePacket.getData());
                         ackReceived = true;
                     } catch (SocketTimeoutException ex) {
+                        //System.out.println("TIMEEERRR: " + t);
+                        t = 0;
                         ackReceived = false;
                         ClientServerUtils.PRINT("User " + client_port + " timed out while waiting for acknowledgment", colour);
                     }
@@ -169,7 +188,7 @@ public class ServerGBN implements Runnable {
 
                         // if ack sequence number > window base, shift window forward
                         if (ackSequenceNum > windowBase) {
-                            serverSocket.setSoTimeout(50);
+                            t = 0;
                             windowBase = ackSequenceNum;
                             ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
                             ClientServerUtils.PRINT("----------------------------------------------------------------", colour);
@@ -217,10 +236,14 @@ public class ServerGBN implements Runnable {
             int ack_seq = 0;
             DatagramPacket receivePacket = new DatagramPacket(Ack, Ack.length);
             try {
+                serverSocket.setSoTimeout(200 - (t * 10));
+
                 serverSocket.receive(receivePacket);
                 ackReceived = true;
                 ack_seq = ClientServerUtils.server_get_seq_no(receivePacket.getData());
             } catch (SocketTimeoutException ex) {
+                //System.out.println("TIMEEERRR: " + t);
+                t = 0;
                 ackReceived = false;
                 ClientServerUtils.PRINT("User " + client_port + " timed out while waiting for acknowledgment", colour);
             }
@@ -231,7 +254,7 @@ public class ServerGBN implements Runnable {
 
                 // if ack sequence number > window base, shift window forward
                 if (ack_seq > windowBase) {
-                    serverSocket.setSoTimeout(50);
+                    t = 0;
                     windowBase = ack_seq;
 
                     ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
@@ -242,6 +265,8 @@ public class ServerGBN implements Runnable {
                 // set isLastAckPacket to true so that we can break from the while loop and close the socket
                 if (ack_seq == packets_needed - 1) {
                     isLastAckPacket = true;
+                    t = 0;
+                     timer.cancel();
                     ClientServerUtils.PRINT("Window base: " + (windowBase + 1) + "           Window High: " + (windowBase + windowSize), colour);
                     ClientServerUtils.PRINT("Received final acknowledgment, now shutting down.", colour);
 
@@ -276,6 +301,8 @@ public class ServerGBN implements Runnable {
 
             }
         }
+        
+       
         serverSocket.close();
     }
 

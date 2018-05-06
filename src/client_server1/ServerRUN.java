@@ -131,10 +131,7 @@ public class ServerRUN {
                 long start = System.currentTimeMillis();
                 switch (i) {
                     case 1:
-                       
-
-                        //ServerRUN.mode=1;
-                        
+            
                         ServerSW s_t = new ServerSW(clientPort, server_inc, Filename, IP_Address, colour, windowSize, plp, Result);
                         Thread thread = new Thread(s_t);
                         if (thread.getState() != Thread.State.NEW) {

@@ -127,7 +127,7 @@ public class ServerSelectiveRpt implements Runnable {
                     }
 
                 };
-                pkt_timer.schedule(pkt_action, 50);
+                pkt_timer.schedule(pkt_action, 200);
 
                 //corrupt the packet
                 if (corruptionafter == 0) {
